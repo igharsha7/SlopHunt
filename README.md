@@ -10,22 +10,27 @@
 </p>
 
 <p align="center">
-  <a href="#watch-the-demo">Watch the demo</a> ·
+  <a href="#watch">Watch</a> ·
   <a href="#run-it-locally">Run locally</a> ·
   <a href="./docs/project-details.md">Read the build spec</a>
 </p>
 
-## Watch the demo
+## Watch
 
 <p align="center">
-  <a href="./Video.mp4" title="Watch the SlopHunt demo">
-    <img src="./public/readme-assets/slophunt-demo.jpg" alt="SlopHunt demo — four agents, one verdict" width="860" />
+  <a href="./launch-video.mp4" title="Watch the SlopHunt launch film">
+    <img src="./public/readme-assets/slophunt-demo.jpg" alt="SlopHunt — four agents, one verdict" width="860" />
   </a>
 </p>
 
 <p align="center">
-  <strong>▶ <a href="./Video.mp4">Watch the 2m 10s demo</a></strong><br />
-  Click the preview to open the full video.
+  <strong>▶ <a href="./launch-video.mp4">Launch film — 55s</a></strong><br />
+  The product in one minute: the problem, the pipeline, the score, the receipts.
+</p>
+
+<p align="center">
+  <strong>▶ <a href="./Video.mp4">Full demo — 2m 10s</a></strong><br />
+  A longer walkthrough of the running app.
 </p>
 
 ## What is SlopHunt?
@@ -44,7 +49,7 @@ from “Congrats on the launch! 🚀”.
 | --- | --- |
 | **01 — Submit** | Paste a GitHub repository you own or that carries the `roast-me` topic. |
 | **02 — Investigate** | Agents crawl the README, commits, file tree, languages, issues, site, and similar products. |
-| **03 — Roast** | Deepak from Code Review turns specific evidence into a dry, devastating verdict. |
+| **03 — Roast** | The roast engine turns specific evidence into a dry, devastating verdict. |
 | **04 — Rank** | The repo gets a Product-Hunt-style page, a Slop Score, receipts, and a place on the leaderboard. |
 
 The text roast and score are instant. Video rendering is intentionally
