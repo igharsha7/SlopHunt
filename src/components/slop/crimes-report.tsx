@@ -4,9 +4,9 @@ import { CRIME_LABELS, type Crime } from "@/lib/slop";
 /** The crimes list, styled as a police evidence log. Every joke's receipt. */
 export function CrimesReport({ crimes }: { crimes: Crime[] }) {
   return (
-    <div className="border-2 border-hairline-2 bg-slab">
-      <div className="flex items-center justify-between border-b-2 border-hairline-2 bg-void px-4 py-3">
-        <h2 className="font-display text-sm font-black uppercase tracking-widest text-toxic">
+    <div className="overflow-hidden rounded-[20px] border-2 border-ink bg-cream">
+      <div className="flex items-center justify-between border-b-2 border-ink bg-paper px-4 py-3">
+        <h2 className="font-display text-sm font-black uppercase tracking-widest text-pop">
           Evidence Log
         </h2>
         <span className="tabular text-xs uppercase tracking-widest text-ash-dim">
@@ -20,10 +20,10 @@ export function CrimesReport({ crimes }: { crimes: Crime[] }) {
               {String(i + 1).padStart(2, "0")}
             </span>
             <div className="min-w-0">
-              <span className="inline-block border border-hairline-2 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-ash">
+              <span className="inline-block border border-ink px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-ash">
                 {CRIME_LABELS[crime.category]}
               </span>
-              <p className="mt-1.5 font-mono text-sm leading-relaxed text-bone">
+              <p className="mt-1.5 font-sans text-sm leading-relaxed text-ink">
                 {crime.evidence}
               </p>
               {crime.detail ? (

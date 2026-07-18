@@ -18,10 +18,11 @@ export function ShareButton({
 }) {
   const [copied, setCopied] = useState(false);
 
-  const url =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/product/${slug}`
-      : `/product/${slug}`;
+  // NEXT_PUBLIC_ vars are inlined into both server and client bundles, so this
+  // renders identically on both sides — a window.location.origin branch here
+  // caused a hydration mismatch on every product page.
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const url = `${base}/product/${slug}`;
 
   const text = `${name} scored ${score}/100 on the SlopHunt leaderboard.\n\n"${oneLiner}"\n\nGet your repo roasted:`;
   const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
@@ -44,7 +45,7 @@ export function ShareButton({
         href={xUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="press inline-flex items-center gap-2 border-2 border-toxic bg-toxic px-4 py-2.5 font-display text-sm font-black uppercase tracking-widest text-void hover:bg-toxic-dim"
+        className="press inline-flex items-center gap-2 rounded-full border-2 border-ink bg-sun px-5 py-2.5 font-display text-sm font-black uppercase tracking-widest text-ink shadow-brut-sm hover:bg-sun-deep"
       >
         Post my roast
         <ExternalIcon className="h-4 w-4" />
@@ -52,7 +53,7 @@ export function ShareButton({
       <button
         type="button"
         onClick={copy}
-        className="press inline-flex items-center gap-2 border-2 border-hairline-2 px-4 py-2.5 font-display text-sm font-black uppercase tracking-widest text-bone hover:border-bone"
+        className="press inline-flex items-center gap-2 rounded-full border-2 border-ink px-5 py-2.5 font-display text-sm font-black uppercase tracking-widest text-ink hover:bg-cream"
       >
         {copied ? "Copied" : "Copy link"}
       </button>

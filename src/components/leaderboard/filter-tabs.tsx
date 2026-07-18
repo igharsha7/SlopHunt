@@ -29,7 +29,7 @@ export function FilterTabs({
     <div
       role="tablist"
       aria-label="Time range"
-      className="inline-flex border-2 border-hairline-2"
+      className="inline-flex overflow-hidden rounded-full border-2 border-ink"
     >
       {RANGES.map((range, i) => {
         const selected = active === range.value;
@@ -40,11 +40,11 @@ export function FilterTabs({
             role="tab"
             aria-selected={selected}
             className={`press px-4 py-2.5 font-display text-xs font-black uppercase tracking-widest sm:text-sm ${
-              i > 0 ? "border-l-2 border-hairline-2" : ""
+              i > 0 ? "border-l-2 border-ink" : ""
             } ${
               selected
-                ? "bg-toxic text-void"
-                : "bg-void text-ash hover:bg-slab hover:text-bone"
+                ? "bg-sun text-ink"
+                : "bg-paper text-ash hover:bg-cream hover:text-ink"
             }`}
           >
             {range.label}

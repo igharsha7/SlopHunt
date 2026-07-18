@@ -48,7 +48,7 @@ export default async function LeaderboardPage({
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <Reveal as="header" y={16} className="border-b-2 border-hairline pb-8">
-        <p className="font-display text-xs font-black uppercase tracking-widest text-toxic">
+        <p className="font-display text-xs font-black uppercase tracking-widest text-pop">
           Ranked by Slop Score
         </p>
         <h1 className="mt-2 font-display font-black uppercase text-huge">
@@ -69,10 +69,9 @@ export default async function LeaderboardPage({
               <Link
                 key={award.id}
                 href={selected ? "/leaderboard" : `/leaderboard?award=${award.id}`}
-                className={`press border-2 px-3 py-2 text-[11px] font-bold uppercase tracking-widest ${
+                className={`press rounded-full border-2 px-4 py-2 text-[11px] font-bold uppercase tracking-widest ${
                   selected
-                    ? "border-toxic bg-toxic text-void"
-                    : "border-hairline-2 text-ash hover:border-toxic hover:text-toxic"
+                    ? "border-ink bg-sun text-ink"                    : "border-ink text-ash hover:border-pop hover:text-pop"
                 }`}
               >
                 {award.label}
@@ -88,16 +87,16 @@ export default async function LeaderboardPage({
           <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-widest text-ash">
             <span className="text-ash-dim">Filtered:</span>
             {tag ? (
-              <span className="border border-hairline-2 px-2 py-1 text-bone">
+              <span className="rounded-full border-2 border-ink px-3 py-1 text-ink">
                 #{tag}
               </span>
             ) : null}
             {activeAwardLabel ? (
-              <span className="border border-toxic px-2 py-1 text-toxic">
+              <span className="rounded-full border-2 border-grape px-3 py-1 text-grape">
                 {activeAwardLabel}
               </span>
             ) : null}
-            <Link href="/leaderboard" className="text-blood hover:underline">
+            <Link href="/leaderboard" className="text-pop hover:underline">
               Clear
             </Link>
           </div>
@@ -116,10 +115,10 @@ export default async function LeaderboardPage({
             <Link
               key={t}
               href={`/leaderboard${qs ? `?${qs}` : ""}`}
-              className={`press border px-2.5 py-1 text-xs lowercase tracking-wide ${
+              className={`press rounded-full border-2 px-3 py-1 text-xs lowercase tracking-wide ${
                 selected
-                  ? "border-toxic bg-toxic-wash text-toxic"
-                  : "border-hairline text-ash-dim hover:border-hairline-2 hover:text-ash"
+                  ? "border-ink bg-sun-wash text-ink"
+                  : "border-hairline text-ash hover:border-ink hover:text-ink"
               }`}
             >
               #{t}
@@ -145,7 +144,7 @@ export default async function LeaderboardPage({
           ))}
         </RevealGroup>
       ) : (
-        <div className="mt-8 border-2 border-dashed border-hairline-2 p-12 text-center">
+        <div className="mt-8 rounded-[20px] border-2 border-dashed border-ink p-12 text-center">
           <p className="font-display text-2xl font-black uppercase text-ash">
             Nothing here yet
           </p>
@@ -154,7 +153,7 @@ export default async function LeaderboardPage({
           </p>
           <Link
             href="/submit"
-            className="press mt-6 inline-block border-2 border-toxic bg-toxic px-6 py-3 font-display text-sm font-black uppercase tracking-widest text-void"
+            className="press mt-6 inline-block rounded-full border-2 border-ink bg-sun px-6 py-3 font-display text-sm font-black uppercase tracking-widest text-ink"
           >
             Submit the first one
           </Link>

@@ -11,6 +11,10 @@ import { useGSAP } from "@gsap/react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
+  // Debug handle: lets devtools (and headless preview surfaces without rAF)
+  // inspect or manually drive the timeline via gsap.updateRoot().
+  (window as unknown as Record<string, unknown>).gsap = gsap;
+  (window as unknown as Record<string, unknown>).ScrollTrigger = ScrollTrigger;
 }
 
 /**

@@ -1,85 +1,90 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   SlopHunt design tokens — "funeral home with a radioactive leak"
-   Brutalist: zero radius, hard borders, offset shadows with no blur.
+   SlopHunt design tokens — byooooob system, SlopHunt brand.
+   White paper, ink black, byooooob yellow #EBD22F, logo-orange pop,
+   chunky black borders, hard 4px/5px offset shadows, bubbly 10–20px radii.
 --------------------------------------------------------------------------- */
 @theme {
-  /* Surfaces, darkest to lightest */
-  --color-void: #0a0a0b;
-  --color-slab: #131316;
-  --color-slab-2: #1b1b1f;
-  --color-hairline: #2a2a30;
-  --color-hairline-2: #3d3d45;
+  /* Surfaces */
+  --color-paper: #ffffff;
+  --color-cream: #eeeeec;
+  --color-cream-2: #e4e4e0;
 
   /* Text */
-  --color-bone: #fafaf9;
-  --color-ash: #8a8a94;
-  --color-ash-dim: #5c5c66;
+  --color-ink: #141414;
+  --color-ash: #555555;
+  --color-ash-dim: #8f8f8a;
 
-  /* Accent — toxic green. Only ever on void/slab, never on light. */
-  --color-toxic: #b6ff3c;
-  --color-toxic-dim: #8fd11f;
-  --color-toxic-wash: #1a2408;
+  /* Lines */
+  --color-hairline: #dddddd;
 
-  /* Semantic */
-  --color-blood: #ff4d1c;
-  --color-rot: #ffb020;
-  --color-alive: #3ddc84;
+  /* Accents — byooooob yellow is the workhorse, logo orange is the heat */
+  --color-sun: #ebd22f;
+  --color-sun-deep: #d9bf17;
+  --color-sun-wash: #faf3c8;
+  --color-pop: #fb4a16;
+  --color-grape: #4d17f5;
+  --color-candy: #fa9dcd;
 
-  /* Type */
-  --font-display: var(--font-archivo), "Arial Black", sans-serif;
-  --font-mono: var(--font-space-mono), ui-monospace, monospace;
+  /* Score semantics (light-safe) */
+  --color-gold: #9c7e06;
+  --color-amber: #f59e0b;
+  --color-rot: #b45309;
+  --color-alive: #178743;
 
-  /* Brutalist type scale — display sizes are deliberately violent */
-  --text-mega: clamp(3rem, 13vw, 11rem);
-  --text-mega--line-height: 0.82;
-  --text-mega--letter-spacing: -0.045em;
-  --text-huge: clamp(2.25rem, 7vw, 5.5rem);
-  --text-huge--line-height: 0.88;
-  --text-huge--letter-spacing: -0.035em;
-  --text-big: clamp(1.75rem, 4vw, 3rem);
-  --text-big--line-height: 0.95;
-  --text-big--letter-spacing: -0.025em;
+  /* Type — Sharp Grotesk stand-ins: Oswald (display) + Space Grotesk (body) */
+  --font-display: var(--font-oswald), "Arial Narrow", sans-serif;
+  --font-sans: var(--font-space-grotesk), "Helvetica Neue", sans-serif;
+  --font-mono: var(--font-space-grotesk), ui-monospace, monospace;
+
+  /* Display scale — big and bold, but bubbly, not crushed */
+  --text-mega: clamp(3rem, 12vw, 10rem);
+  --text-mega--line-height: 0.98;
+  --text-mega--letter-spacing: 0em;
+  --text-huge: clamp(2.25rem, 6.5vw, 5rem);
+  --text-huge--line-height: 1;
+  --text-huge--letter-spacing: 0em;
+  --text-big: clamp(1.75rem, 4vw, 2.75rem);
+  --text-big--line-height: 1.05;
+  --text-big--letter-spacing: 0em;
 
   --ease-brut: cubic-bezier(0.2, 0.9, 0.25, 1);
 }
 
 @layer base {
   html {
-    background: var(--color-void);
-    color: var(--color-bone);
+    background: var(--color-paper);
+    color: var(--color-ink);
     -webkit-font-smoothing: antialiased;
     scroll-behavior: smooth;
   }
 
-  /* Focus rings must survive a dark brutalist theme — 3px, toxic, offset. */
+  /* Purple focus ring — visible on white, cream, and yellow alike. */
   :focus-visible {
-    outline: 3px solid var(--color-toxic);
+    outline: 3px solid var(--color-grape);
     outline-offset: 2px;
   }
 
   ::selection {
-    background: var(--color-toxic);
-    color: var(--color-void);
+    background: var(--color-sun);
+    color: var(--color-ink);
   }
 
   /* Numbers in leaderboards/scores must not jitter as they change. */
   .tabular {
     font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
   }
 }
 
 @layer components {
-  /* Hard offset shadow — the brutalist "lift". No blur, ever. */
+  /* byooooob's literal shadow: 4px 5px #000. No blur, ever. */
   .shadow-brut {
-    box-shadow: 4px 4px 0 0 var(--color-toxic);
+    box-shadow: 4px 5px 0 0 var(--color-ink);
   }
   .shadow-brut-sm {
-    box-shadow: 3px 3px 0 0 var(--color-toxic);
-  }
-  .shadow-brut-bone {
-    box-shadow: 4px 4px 0 0 var(--color-bone);
+    box-shadow: 3px 4px 0 0 var(--color-ink);
   }
 
   /* Press feedback that doesn't reflow: translate into the shadow. */
@@ -88,27 +93,17 @@
       transform 150ms var(--ease-brut),
       box-shadow 150ms var(--ease-brut),
       background-color 150ms var(--ease-brut),
+      border-color 150ms var(--ease-brut),
       color 150ms var(--ease-brut);
   }
   .press:active:not(:disabled) {
-    transform: translate(3px, 3px);
-    box-shadow: 0 0 0 0 var(--color-toxic);
-  }
-
-  /* Film grain over the whole page — stops flat black looking cheap. */
-  .grain::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    pointer-events: none;
-    opacity: 0.16;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    transform: translate(4px, 5px);
+    box-shadow: 0 0 0 0 var(--color-ink);
   }
 }
 
 @layer utilities {
-  /* Marquee — byooooob's endless scrolling type bands. */
+  /* Endless horizontal type bands. */
   @keyframes marquee-x {
     from {
       transform: translateX(0);
@@ -142,8 +137,8 @@
     animation: rise-in 420ms var(--ease-brut) both;
   }
 
-  .text-stroke-toxic {
-    -webkit-text-stroke: 2px var(--color-toxic);
+  .text-stroke-ink {
+    -webkit-text-stroke: 3px var(--color-ink);
     color: transparent;
   }
 }

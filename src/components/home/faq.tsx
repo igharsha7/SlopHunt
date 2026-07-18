@@ -45,13 +45,12 @@ export function Faq() {
                 type="button"
                 onClick={() => setOpen(isOpen ? null : i)}
                 aria-expanded={isOpen}
-                className="flex w-full items-center justify-between gap-4 px-1 py-6 text-left transition-colors hover:text-toxic"
+                className="flex w-full items-center justify-between gap-4 px-1 py-6 text-left transition-colors hover:text-pop"
               >
                 <span className="font-display text-xl font-black uppercase tracking-tight sm:text-2xl">
                   {faq.q}
                 </span>
-                <ChevronIcon
-                  className={`h-6 w-6 shrink-0 text-toxic transition-transform duration-200 ${
+                <ChevronIcon                  className={`h-6 w-6 shrink-0 text-pop transition-transform duration-200 ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 />

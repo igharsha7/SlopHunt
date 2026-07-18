@@ -26,9 +26,9 @@ export default async function HomePage() {
           <div className="mx-auto max-w-7xl px-4 pb-16 pt-14 sm:px-6 sm:pb-24 sm:pt-20">
             <div
               data-hero-chip
-              className="inline-flex items-center gap-2 border-2 border-hairline bg-slab px-3 py-1.5 text-[11px] uppercase tracking-widest text-ash"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-4 py-1.5 text-[11px] uppercase tracking-widest text-ash"
             >
-              <span className="inline-block h-2 w-2 animate-pulse bg-toxic" />
+              <span className="inline-block h-2 w-2 rounded-full animate-pulse bg-pop" />
               {entries.length} repos roasted · {totalSkulls.toLocaleString()}{" "}
               skulls given
             </div>
@@ -38,7 +38,7 @@ export default async function HomePage() {
                 Submit your repo.
               </span>
               <span data-hero-line className="block">
-                Get <span className="text-stroke-toxic">roasted</span>.
+                Get <span className="text-stroke-ink">roasted</span>.
               </span>
               <span data-hero-line className="block">
                 Get ranked.
@@ -47,11 +47,11 @@ export default async function HomePage() {
 
             <p
               data-hero-sub
-              className="mt-6 max-w-2xl font-mono text-base leading-relaxed text-ash sm:text-lg"
+              className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-ash sm:text-lg"
             >
               Product Hunt&apos;s evil twin. An AI agent crawls your GitHub,
               finds the{" "}
-              <span className="whitespace-nowrap font-bold text-bone">
+              <span className="whitespace-nowrap font-bold text-ink">
                 <RotatingWord
                   words={[
                     "dead demo link",
@@ -75,14 +75,14 @@ export default async function HomePage() {
               className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs uppercase tracking-widest text-ash-dim"
             >
               <span className="inline-flex items-center gap-1.5">
-                <CheckIcon className="h-4 w-4 text-toxic" /> Instant score
+                <CheckIcon className="h-4 w-4 text-alive" /> Instant score
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <CheckIcon className="h-4 w-4 text-toxic" /> Already-exists
+                <CheckIcon className="h-4 w-4 text-alive" /> Already-exists
                 receipts
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <CheckIcon className="h-4 w-4 text-toxic" /> Video roast
+                <CheckIcon className="h-4 w-4 text-alive" /> Video roast
               </span>
             </div>
           </div>
@@ -90,7 +90,7 @@ export default async function HomePage() {
       </section>
 
       {/* ------------------------------------------------------------- MARQUEE */}
-      <div className="border-b-2 border-hairline bg-toxic py-3 text-void">
+      <div className="border-y-2 border-ink bg-sun py-3 text-ink">
         <Marquee
           items={[
             "THIS ALREADY EXISTS",
@@ -108,8 +108,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="font-display text-xs font-black uppercase tracking-widest text-toxic">
-                The Slop Leaderboard
+              <p className="font-display text-xs font-black uppercase tracking-widest text-pop">                The Slop Leaderboard
               </p>
               <h2 className="mt-2 font-display font-black uppercase text-huge">
                 Today&apos;s worst
@@ -117,7 +116,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/leaderboard"
-              className="press inline-flex items-center gap-2 border-2 border-bone px-4 py-2.5 font-display text-sm font-black uppercase tracking-widest hover:bg-bone hover:text-void"
+              className="press inline-flex items-center gap-2 rounded-full border-2 border-ink px-5 py-2.5 font-display text-sm font-black uppercase tracking-widest hover:bg-ink hover:text-sun"
             >
               See all
               <ArrowIcon className="h-4 w-4" />
@@ -155,7 +154,7 @@ export default async function HomePage() {
             as="ol"
             y={32}
             stagger={0.09}
-            className="mt-12 grid gap-px border-2 border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-12 grid gap-px overflow-hidden rounded-[20px] border-2 border-ink bg-ink sm:grid-cols-2 lg:grid-cols-4"
           >
             {[
               {
@@ -179,8 +178,8 @@ export default async function HomePage() {
                 d: "Deepak reads your crimes back to you. Instant page now, video when it renders.",
               },
             ].map((step) => (
-              <li key={step.n} className="bg-void p-6">
-                <div className="font-display text-4xl font-black text-toxic">
+              <li key={step.n} className="bg-paper p-6">
+                <div className="font-display text-4xl font-black text-pop">
                   {step.n}
                 </div>
                 <h3 className="mt-4 font-display text-xl font-black uppercase">
@@ -194,11 +193,10 @@ export default async function HomePage() {
       </section>
 
       {/* -------------------------------------------------------- CRIMES BAND */}
-      <section className="border-b-2 border-hairline bg-slab">
+      <section className="border-b-2 border-hairline bg-cream">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <Reveal>
-            <p className="font-display text-xs font-black uppercase tracking-widest text-toxic">
-              A sample of crimes
+            <p className="font-display text-xs font-black uppercase tracking-widest text-pop">              A sample of crimes
             </p>
             <h2 className="mt-2 max-w-3xl font-display font-black uppercase text-huge">
               Every joke cites evidence
@@ -224,8 +222,8 @@ export default async function HomePage() {
                 key={crime}
                 className="flex items-start gap-3 border-b border-hairline py-3"
               >
-                <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-toxic" />
-                <span className="text-bone">{crime}</span>
+                <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-alive" />
+                <span className="text-ink">{crime}</span>
               </li>
             ))}
           </RevealGroup>
@@ -249,7 +247,7 @@ export default async function HomePage() {
       </section>
 
       {/* ------------------------------------------------------------- CTA */}
-      <section className="border-t-2 border-hairline bg-toxic text-void">
+      <section className="border-t-2 border-ink bg-sun text-ink">
         <Reveal y={28} className="mx-auto max-w-7xl px-4 py-20 text-center sm:px-6">
           <h2 className="mx-auto max-w-4xl font-display font-black uppercase text-huge">
             Your repo is already slop.
@@ -259,7 +257,7 @@ export default async function HomePage() {
           <div className="mx-auto mt-10 max-w-xl">
             <Link
               href="/submit"
-              className="press inline-flex items-center gap-3 border-2 border-void bg-void px-8 py-4 font-display text-lg font-black uppercase tracking-widest text-toxic hover:bg-slab"
+              className="press inline-flex items-center gap-3 rounded-full border-2 border-ink bg-ink px-8 py-4 font-display text-lg font-black uppercase tracking-widest text-sun shadow-brut hover:bg-paper hover:text-ink"
             >
               Submit your repo
               <ArrowIcon className="h-5 w-5" />

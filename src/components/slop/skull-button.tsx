@@ -86,10 +86,10 @@ export function SkullButton({
       onClick={toggle}
       aria-pressed={reacted}
       aria-label={reacted ? "Remove your skull" : "Give this repo a skull"}
-      className={`press flex flex-col items-center justify-center gap-1 border-2 font-display font-black leading-none ${pad} ${
+      className={`press flex flex-col items-center justify-center gap-1 rounded-[14px] border-2 font-display font-black leading-none ${pad} ${
         reacted
-          ? "border-toxic bg-toxic text-void"
-          : "border-hairline-2 bg-void text-bone hover:border-toxic hover:text-toxic"
+          ? "border-ink bg-candy text-ink"
+          : "border-ink bg-paper text-ink hover:border-pop hover:text-pop"
       }`}
     >
       <SkullIcon className={icon} />

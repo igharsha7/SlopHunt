@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 
 /**
- * 2px toxic progress bar pinned above the nav — how deep into the slop you are.
+ * 2px sun progress bar pinned above the nav — how deep into the slop you are.
  * Scroll-linked (moves only when the user scrolls), skipped under
  * reduced motion anyway since it's decorative.
  */
@@ -37,7 +37,7 @@ export function ScrollProgress() {
     <div
       ref={barRef}
       aria-hidden
-      className="fixed inset-x-0 top-0 z-[120] h-0.5 origin-left scale-x-0 bg-toxic"
+      className="fixed inset-x-0 top-0 z-[120] h-[3px] origin-left scale-x-0 bg-pop"
     />
   );
 }

@@ -32,7 +32,7 @@ export function Marquee({
             <span className="px-6 font-display text-2xl font-black uppercase tracking-tight sm:text-4xl">
               {item}
             </span>
-            <span aria-hidden className="text-toxic">
+            <span aria-hidden className="text-pop">
               ✦
             </span>
           </li>

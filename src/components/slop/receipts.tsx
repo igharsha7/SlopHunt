@@ -29,13 +29,13 @@ export function Receipts({ receipts }: { receipts: Receipt[] }) {
             href={receipt.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="press group flex flex-col border-2 border-hairline-2 bg-slab p-5 hover:border-toxic hover:bg-void"
+            className="press group flex flex-col rounded-[20px] border-2 border-ink bg-cream p-5 hover:border-pop hover:bg-paper"
           >
             <div className="flex items-start justify-between gap-2">
-              <span className="font-display text-lg font-black uppercase tracking-tight group-hover:text-toxic">
+              <span className="font-display text-lg font-black uppercase tracking-tight group-hover:text-pop">
                 {receipt.name}
               </span>
-              <ExternalIcon className="h-4 w-4 shrink-0 text-ash-dim group-hover:text-toxic" />
+              <ExternalIcon className="h-4 w-4 shrink-0 text-ash-dim group-hover:text-pop" />
             </div>
             <p className="mt-2 text-sm leading-relaxed text-ash">
               {receipt.description}

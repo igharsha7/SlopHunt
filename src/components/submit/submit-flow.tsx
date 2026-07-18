@@ -49,17 +49,17 @@ export function SubmitFlow({
   if (phase === "queued") {
     const parsed = parse(value)!;
     return (
-      <div className="mt-10 border-2 border-toxic bg-slab p-8">
+      <div className="mt-10 rounded-[20px] border-2 border-ink bg-sun-wash p-8">
         <div className="flex items-center gap-3">
-          <span className="flex h-8 w-8 items-center justify-center bg-toxic text-void">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-alive text-paper">
             <CheckIcon className="h-5 w-5" />
           </span>
           <h2 className="font-display text-2xl font-black uppercase">
             Queued for roasting
           </h2>
         </div>
-        <p className="mt-4 font-mono text-ash">
-          <span className="text-bone">
+        <p className="mt-4 font-sans text-ash">
+          <span className="text-ink">
             {parsed.owner}/{parsed.name}
           </span>{" "}
           is in the pipeline. The crawler is reading your commit history right
@@ -78,7 +78,7 @@ export function SubmitFlow({
               className="flex items-center gap-3 text-sm uppercase tracking-widest text-ash"
             >
               <span
-                className="h-2 w-2 animate-pulse bg-toxic"
+                className="h-2 w-2 rounded-full animate-pulse bg-pop"
                 style={{ animationDelay: `${i * 150}ms` }}
               />
               {step}
@@ -95,7 +95,7 @@ export function SubmitFlow({
 
   return (
     <form onSubmit={onSubmit} className="mt-10" noValidate>
-      <div className="border-2 border-hairline-2 bg-slab p-6">
+      <div className="border-2 border-ink bg-cream p-6">
         <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ash">
           <span className="h-2 w-2 bg-alive" />
           Signed in as {login}
@@ -122,10 +122,10 @@ export function SubmitFlow({
           disabled={phase === "checking"}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? "repo-error" : "repo-help"}
-          className="mt-2 h-14 w-full border-2 border-hairline-2 bg-void px-4 font-mono text-base text-bone placeholder:text-ash-dim focus:border-toxic focus:outline-none disabled:opacity-50"
+          className="mt-2 h-14 w-full rounded-full border-2 border-ink bg-paper px-5 font-sans text-base text-ink placeholder:text-ash-dim focus:border-grape focus:outline-none disabled:opacity-50"
         />
         {error ? (
-          <p id="repo-error" role="alert" className="mt-2 text-sm text-blood">
+          <p id="repo-error" role="alert" className="mt-2 text-sm text-pop">
             {error}
           </p>
         ) : (
@@ -138,7 +138,7 @@ export function SubmitFlow({
         <button
           type="submit"
           disabled={phase === "checking"}
-          className="press mt-6 flex w-full items-center justify-center gap-2 border-2 border-toxic bg-toxic px-6 py-4 font-display text-base font-black uppercase tracking-widest text-void shadow-brut-bone hover:bg-toxic-dim disabled:cursor-not-allowed disabled:opacity-60"
+          className="press mt-6 flex w-full items-center justify-center gap-2 rounded-full border-2 border-ink bg-sun px-6 py-4 font-display text-base font-black uppercase tracking-widest text-ink shadow-brut hover:bg-sun-deep disabled:cursor-not-allowed disabled:opacity-60"
         >
           {phase === "checking" ? (
             "Verifying ownership…"

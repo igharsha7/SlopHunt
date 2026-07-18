@@ -19,7 +19,7 @@ export function SlopRow({
   award?: string;
 }) {
   return (
-    <li className="group relative border-b border-hairline transition-colors hover:bg-slab">
+    <li className="group relative border-b border-hairline transition-colors hover:bg-cream">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 sm:gap-5 sm:px-6">
         <div className="tabular w-8 shrink-0 text-center font-display text-xl font-black text-ash-dim sm:w-12 sm:text-3xl">
           {rank}
@@ -27,7 +27,7 @@ export function SlopRow({
 
         <div
           aria-hidden
-          className="hidden h-12 w-12 shrink-0 items-center justify-center border-2 border-hairline-2 bg-void font-display text-lg font-black text-toxic sm:flex"
+          className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-[12px] border-2 border-ink bg-sun-wash font-display text-lg font-black text-pop sm:flex"
         >
           {entry.owner.slice(0, 2).toUpperCase()}
         </div>
@@ -36,12 +36,12 @@ export function SlopRow({
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <Link
               href={`/product/${entry.slug}`}
-              className="truncate font-display text-lg font-black uppercase tracking-tight after:absolute after:inset-0 hover:text-toxic"
+              className="truncate font-display text-lg font-black uppercase tracking-tight after:absolute after:inset-0 hover:text-pop"
             >
               {entry.name}
             </Link>
             {award ? (
-              <span className="border border-toxic px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-toxic">
+              <span className="rounded-full border-2 border-grape px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-grape">
                 {award}
               </span>
             ) : null}

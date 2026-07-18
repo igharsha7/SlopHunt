@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center px-4 py-32 text-center sm:px-6">
-      <span className="font-display font-black uppercase text-mega text-toxic">
+      <span className="font-display font-black uppercase text-mega text-pop">
         404
       </span>
       <h1 className="mt-4 font-display text-big font-black uppercase">
@@ -15,7 +15,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="press mt-8 border-2 border-toxic bg-toxic px-6 py-3 font-display text-sm font-black uppercase tracking-widest text-void"
+        className="press mt-8 rounded-full border-2 border-ink bg-sun px-6 py-3 font-display text-sm font-black uppercase tracking-widest text-ink"
       >
         Back to the slop
       </Link>

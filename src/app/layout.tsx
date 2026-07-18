@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, Space_Mono } from "next/font/google";
+import { Oswald, Space_Grotesk } from "next/font/google";
 
 import { ScrollProgress } from "@/components/gsap/scroll-progress";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -7,16 +7,17 @@ import { SiteNav } from "@/components/site/site-nav";
 
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+// byooooob runs Sharp Grotesk (commercial) with Oswald loaded as its Google
+// stand-in — Oswald for display + Space Grotesk for body is the free pairing.
+const oswald = Oswald({
+  variable: "--font-oswald",
   subsets: ["latin"],
   display: "swap",
 });
 
-const spaceMono = Space_Mono({
-  variable: "--font-space-mono",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["400", "700"],
   display: "swap",
 });
 
@@ -50,12 +51,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${spaceMono.variable} h-full`}
+      className={`${oswald.variable} ${spaceGrotesk.variable} h-full`}
     >
-      <body className="grain flex min-h-full flex-col bg-void font-mono text-bone">
+      <body className="flex min-h-full flex-col bg-paper font-sans text-ink">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:border-2 focus:border-toxic focus:bg-void focus:px-4 focus:py-2 focus:text-sm focus:uppercase"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-full focus:border-2 focus:border-ink focus:bg-paper focus:px-4 focus:py-2 focus:text-sm focus:uppercase"
         >
           Skip to content
         </a>

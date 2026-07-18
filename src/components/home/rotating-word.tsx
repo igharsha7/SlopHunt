@@ -25,7 +25,7 @@ export function RotatingWord({ words }: { words: string[] }) {
       <span
         key={index}
         aria-live="polite"
-        className="animate-rise col-start-1 row-start-1 bg-toxic px-2 text-void"
+        className="animate-rise col-start-1 row-start-1 rounded-md bg-sun px-2 text-ink"
       >
         {words[index]}
       </span>

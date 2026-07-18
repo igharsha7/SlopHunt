@@ -17,7 +17,7 @@ export function ScoreBadge({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center border-2 border-hairline-2 bg-void ${dims}`}
+      className={`flex flex-col items-center justify-center rounded-[10px] border-2 border-ink bg-paper ${dims}`}
     >
       <span
         className={`tabular font-display font-black leading-none ${scoreColor(score)}`}

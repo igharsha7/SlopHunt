@@ -24,7 +24,7 @@ export default async function SubmitPage({
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-      <p className="font-display text-xs font-black uppercase tracking-widest text-toxic">
+      <p className="font-display text-xs font-black uppercase tracking-widest text-pop">
         Intake
       </p>
       <h1 className="mt-2 font-display font-black uppercase text-huge">
@@ -39,7 +39,7 @@ export default async function SubmitPage({
           login={(user.user_metadata?.user_name as string) ?? "you"}
         />
       ) : (
-        <div className="mt-10 border-2 border-hairline-2 bg-slab p-8">
+        <div className="mt-10 rounded-[20px] border-2 border-ink bg-cream p-8">
           <h2 className="font-display text-2xl font-black uppercase">
             Sign in first
           </h2>
@@ -55,7 +55,7 @@ export default async function SubmitPage({
               "Or: add the roast-me topic to any repo, no sign-in needed",
             ].map((line) => (
               <li key={line} className="flex items-start gap-2">
-                <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-toxic" />
+                <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-alive" />
                 <span>{line}</span>
               </li>
             ))}
@@ -68,7 +68,7 @@ export default async function SubmitPage({
             />
             <button
               type="submit"
-              className="press inline-flex items-center gap-2 border-2 border-toxic bg-toxic px-6 py-3.5 font-display text-base font-black uppercase tracking-widest text-void shadow-brut-bone hover:bg-toxic-dim"
+              className="press inline-flex items-center gap-2 rounded-full border-2 border-ink bg-sun px-6 py-3.5 font-display text-base font-black uppercase tracking-widest text-ink shadow-brut hover:bg-sun-deep"
             >
               <GitHubIcon className="h-5 w-5" /> Sign in with GitHub
             </button>
@@ -78,7 +78,7 @@ export default async function SubmitPage({
 
       <p className="mt-8 text-center text-xs uppercase tracking-widest text-ash-dim">
         Changed your mind?{" "}
-        <Link href="/leaderboard" className="text-ash hover:text-toxic">
+        <Link href="/leaderboard" className="text-ash hover:text-pop">
           Just watch others suffer
         </Link>
       </p>

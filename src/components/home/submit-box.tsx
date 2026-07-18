@@ -51,19 +51,19 @@ export function SubmitBox() {
             }}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? "repo-error" : undefined}
-            className="h-14 w-full border-2 border-hairline-2 bg-void px-4 font-mono text-base text-bone placeholder:text-ash-dim focus:border-toxic focus:outline-none"
+            className="h-14 w-full rounded-full border-2 border-ink bg-paper px-5 font-sans text-base text-ink placeholder:text-ash-dim focus:border-grape focus:outline-none"
           />
         </div>
         <button
           type="submit"
-          className="press flex h-14 items-center justify-center gap-2 border-2 border-toxic bg-toxic px-6 font-display text-base font-black uppercase tracking-widest text-void shadow-brut-bone hover:bg-toxic-dim"
+          className="press flex h-14 items-center justify-center gap-2 rounded-full border-2 border-ink bg-sun px-7 font-display text-base font-black uppercase tracking-widest text-ink shadow-brut hover:bg-sun-deep"
         >
           Roast it
           <ArrowIcon className="h-5 w-5" />
         </button>
       </div>
       {error ? (
-        <p id="repo-error" role="alert" className="mt-2 text-sm text-blood">
+        <p id="repo-error" role="alert" className="mt-2 text-sm text-pop">
           {error}
         </p>
       ) : (

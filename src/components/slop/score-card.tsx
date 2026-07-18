@@ -63,8 +63,8 @@ export function ScoreCard({
   );
 
   return (
-    <div ref={rootRef} className="border-2 border-hairline-2 bg-slab">
-      <div className="border-b-2 border-hairline-2 p-6">
+    <div ref={rootRef} className="overflow-hidden rounded-[20px] border-2 border-ink bg-cream shadow-brut">
+      <div className="border-b-2 border-ink p-6">
         <div className="flex items-center justify-between">
           <span className="font-display text-xs font-black uppercase tracking-widest text-ash">
             Slop Score
@@ -110,7 +110,7 @@ export function ScoreCard({
                 </dd>
               </div>
               <div
-                className="mt-2 h-2 w-full border border-hairline bg-void"
+                className="mt-2 h-2 w-full border border-hairline bg-paper"
                 role="meter"
                 aria-valuenow={value}
                 aria-valuemin={0}

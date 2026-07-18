@@ -65,7 +65,7 @@ export default async function ProductPage({
     <article className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <Link
         href="/leaderboard"
-        className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-ash-dim hover:text-toxic"
+        className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-ash-dim hover:text-pop"
       >
         <ArrowIcon className="h-3.5 w-3.5 rotate-180" />
         Leaderboard
@@ -79,11 +79,11 @@ export default async function ProductPage({
               <h1 className="font-display font-black uppercase text-huge">
                 {entry.name}
               </h1>
-              <span className="border-2 border-toxic px-2 py-1 font-display text-xs font-black uppercase tracking-widest text-toxic">
+              <span className="rounded-full border-2 border-pop px-3 py-1 font-display text-xs font-black uppercase tracking-widest text-pop">
                 {scoreVerdict(entry.slopScore)}
               </span>
             </div>
-            <p className="mt-3 max-w-2xl font-mono text-lg text-ash">
+            <p className="mt-3 max-w-2xl font-sans text-lg text-ash">
               {entry.tagline}
             </p>
 
@@ -101,7 +101,7 @@ export default async function ProductPage({
                 <Link
                   key={topic}
                   href={`/leaderboard?tag=${topic}`}
-                  className="press border border-hairline-2 px-2.5 py-1 text-xs lowercase text-ash hover:border-toxic hover:text-toxic"
+                  className="press rounded-full border-2 border-ink px-3 py-1 text-xs lowercase text-ash hover:border-pop hover:text-pop"
                 >
                   #{topic}
                 </Link>
@@ -113,7 +113,7 @@ export default async function ProductPage({
                 href={entry.htmlUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="press inline-flex items-center gap-2 border-2 border-hairline-2 px-4 py-2.5 font-display text-sm font-black uppercase tracking-widest hover:border-bone"
+                className="press inline-flex items-center gap-2 rounded-full border-2 border-ink px-5 py-2.5 font-display text-sm font-black uppercase tracking-widest hover:bg-cream"
               >
                 <GitHubIcon className="h-4 w-4" /> Repo
               </a>
@@ -122,7 +122,7 @@ export default async function ProductPage({
                   href={entry.homepageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="press inline-flex items-center gap-2 border-2 border-hairline-2 px-4 py-2.5 font-display text-sm font-black uppercase tracking-widest hover:border-bone"
+                  className="press inline-flex items-center gap-2 rounded-full border-2 border-ink px-5 py-2.5 font-display text-sm font-black uppercase tracking-widest hover:bg-cream"
                 >
                   <ExternalIcon className="h-4 w-4" /> Site
                 </a>
@@ -145,7 +145,7 @@ export default async function ProductPage({
         {/* LEFT: screenshot, roast, receipts, crimes */}
         <div className="min-w-0 space-y-12">
           {/* Screenshot / fallback */}
-          <div className="border-2 border-hairline-2 bg-slab">
+          <div className="overflow-hidden rounded-[20px] border-2 border-ink bg-cream">
             {entry.screenshotUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -179,9 +179,9 @@ export default async function ProductPage({
               As read by Deepak, who reviewed 40,000 PRs and believed in software
               once
             </p>
-            <div className="mt-5 space-y-4 border-l-2 border-toxic pl-5">
+            <div className="mt-5 space-y-4 border-l-4 border-pop pl-5">
               {entry.pageRoast.split("\n\n").map((para, i) => (
-                <p key={i} className="font-mono leading-relaxed text-bone">
+                <p key={i} className="font-sans leading-relaxed text-ink">
                   {para}
                 </p>
               ))}

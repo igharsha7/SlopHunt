@@ -36,7 +36,7 @@ export function VideoSlot({
 }) {
   if (status === "ready" && url) {
     return (
-      <div className="mx-auto aspect-[9/16] w-full max-w-[280px] border-2 border-toxic bg-void">
+      <div className="mx-auto aspect-[9/16] w-full max-w-[280px] overflow-hidden rounded-[20px] border-2 border-ink bg-paper">
         <video
           src={url}
           controls
@@ -54,20 +54,20 @@ export function VideoSlot({
 
   return (
     <div
-      className={`mx-auto flex aspect-[9/16] w-full max-w-[280px] flex-col items-center justify-center gap-3 border-2 p-6 text-center ${
-        done ? "border-toxic bg-void" : "border-dashed border-hairline-2 bg-slab"
+      className={`mx-auto flex aspect-[9/16] w-full max-w-[280px] flex-col items-center justify-center gap-3 rounded-[20px] border-2 p-6 text-center ${
+        done ? "border-ink bg-sun-wash" : "border-dashed border-ink bg-cream"
       }`}
     >
       {done ? (
         <span
           aria-hidden
-          className="flex h-14 w-14 items-center justify-center border-2 border-toxic text-2xl font-black text-toxic"
+          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-ink bg-paper text-2xl font-black text-ink"
         >
           ▶
         </span>
       ) : (
         <div
-          className={`h-3 w-3 bg-toxic ${pulsing ? "animate-pulse" : "opacity-40"}`}
+          className={`h-3 w-3 rounded-full bg-pop ${pulsing ? "animate-pulse" : "opacity-40"}`}
           aria-hidden
         />
       )}

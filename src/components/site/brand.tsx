@@ -20,12 +20,12 @@ export function hasLogoFile(): boolean {
 }
 
 export function Brand({ size = "nav" }: { size?: "nav" | "footer" }) {
-  const imgClass = size === "footer" ? "h-10 w-auto" : "h-8 w-auto";
+  const imgClass = size === "footer" ? "h-12 w-auto" : "h-9 w-auto";
   const textClass =
     size === "footer"
       ? "font-display text-2xl font-black uppercase"
       : "font-display text-xl font-black uppercase tracking-tight";
-  const squareClass = "inline-block h-5 w-5 border-2 border-toxic bg-toxic";
+  const squareClass = "inline-block h-5 w-5 rounded-md border-2 border-ink bg-sun";
 
   if (hasLogoFile()) {
     return (

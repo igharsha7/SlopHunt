@@ -89,18 +89,22 @@ export const BREAKDOWN_LABELS: Array<{ key: keyof Breakdown; label: string; blur
   },
 ];
 
-/** Higher score = sloppier, so the ramp runs green (fine) to red (crime scene). */
+/**
+ * Higher score = sloppier, so the ramp runs green (fine) to orange (crime
+ * scene). Text and bar hues differ: text needs contrast on white, bars can run
+ * brighter. Yellow is never a text colour on this theme.
+ */
 export function scoreColor(score: number): string {
-  if (score >= 90) return "text-blood";
+  if (score >= 90) return "text-pop";
   if (score >= 75) return "text-rot";
-  if (score >= 50) return "text-toxic";
+  if (score >= 50) return "text-gold";
   return "text-alive";
 }
 
 export function scoreBg(score: number): string {
-  if (score >= 90) return "bg-blood";
-  if (score >= 75) return "bg-rot";
-  if (score >= 50) return "bg-toxic";
+  if (score >= 90) return "bg-pop";
+  if (score >= 75) return "bg-amber";
+  if (score >= 50) return "bg-sun";
   return "bg-alive";
 }
 
