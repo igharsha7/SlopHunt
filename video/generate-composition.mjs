@@ -85,6 +85,79 @@ export function beatDuration(line) {
 }
 
 /**
+ * Regroups caption beats onto sentence boundaries.
+ *
+ * The writer is asked for 4-7 word beats, which happily splits a sentence
+ * across two cards ("The README says this is" / "the last tool you'll ever
+ * need") — the text on screen then reads as a fragment and the cut lands
+ * mid-thought. This merges fragments forward until each card ends on real
+ * punctuation, then splits anything too long back apart at a clause break so
+ * one card never overflows the frame.
+ */
+/**
+ * A sentence is the atomic unit — it is never hard-split, because a card
+ * ending on "you will ever" is worse than a card that runs slightly long.
+ * Over-long cards are split only at real clause breaks, and the type scales
+ * down instead (see .beat-text sizing).
+ */
+const MAX_WORDS_PER_CARD = 16;
+
+export function groupIntoSentences(lines) {
+  const endsSentence = (s) => /[.!?:]["')\]]?$/.test(s.trim());
+  const merged = [];
+
+  for (const raw of lines) {
+    const line = String(raw).trim();
+    if (!line) continue;
+
+    const prev = merged[merged.length - 1];
+    // Continue the previous card when it was left hanging mid-sentence.
+    if (prev && !endsSentence(prev)) {
+      merged[merged.length - 1] = `${prev} ${line}`;
+    } else {
+      merged.push(line);
+    }
+  }
+
+  // Split over-long cards at a clause break so nothing overflows the frame.
+  const out = [];
+  for (const card of merged) {
+    const words = card.split(/\s+/);
+    if (words.length <= MAX_WORDS_PER_CARD) {
+      out.push(card);
+      continue;
+    }
+    // Prefer an internal sentence end; fall back to a comma; else hard split.
+    const parts = card.match(/[^.!?]+[.!?]+["')\]]?\s*/g) ?? [card];
+    for (const part of parts) {
+      const p = part.trim();
+      if (!p) continue;
+      const w = p.split(/\s+/);
+      if (w.length <= MAX_WORDS_PER_CARD) {
+        out.push(p);
+      } else {
+        // Clause break only — a comma or a dash. If there's neither, the
+        // sentence ships whole and the type shrinks to fit.
+        const at = (() => {
+          const c = p.indexOf(", ");
+          if (c > 3 && c < p.length - 6) return c + 1;
+          const d = p.indexOf(" — ");
+          if (d > 3 && d < p.length - 6) return d;
+          return -1;
+        })();
+        if (at > 0) {
+          out.push(p.slice(0, at).trim(), p.slice(at).trim());
+        } else {
+          out.push(p);
+        }
+      }
+    }
+  }
+
+  return out.filter(Boolean);
+}
+
+/**
  * Lays out caption beats end to end. When `audioDuration` is known the beats
  * are scaled to fill exactly that long, so captions never drift from the voice.
  */
@@ -116,9 +189,11 @@ export function buildComposition(payload) {
   } = payload;
 
   // Caption-driven when we have a script; otherwise fall back to crime cards.
+  // Captions are regrouped onto sentence boundaries so a card never shows a
+  // fragment and a cut never lands mid-thought.
   const beatsSource =
     captionLines.length > 0
-      ? captionLines
+      ? groupIntoSentences(captionLines)
       : crimes.slice(0, 4).map((c) => (typeof c === "string" ? c : c.evidence));
 
   // The voice covers hook + captions; the score/outro land after it.
@@ -141,10 +216,13 @@ export function buildComposition(payload) {
   const captionClips = beats
     .map(({ line, start, duration, index }) => {
       const theme = CAPTION_BGS[index % CAPTION_BGS.length];
+      // Longer sentences step the type down rather than overflow the frame.
+      const words = String(line).trim().split(/\s+/).length;
+      const size = words > 12 ? 68 : words > 8 ? 84 : 104;
       return `      <div class="clip beat" id="beat-${index}" data-start="${start}" data-duration="${duration}" data-track-index="1" style="background:${theme.bg};color:${theme.fg}">
         <div class="inner">
           <div class="beat-tick" style="background:${theme.accent}"></div>
-          <div class="beat-text">${esc(line)}</div>
+          <div class="beat-text" style="font-size:${size}px">${esc(line)}</div>
         </div>
       </div>`;
     })
