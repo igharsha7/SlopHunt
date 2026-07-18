@@ -15,10 +15,8 @@
  *
  * Emits JSON: { outPath, durationSec, beats: [{ text, start, duration }] }
  */
-import { readFile, writeFile, mkdtemp, rm } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 
 export const DEFAULT_VOICE = process.env.KOKORO_VOICE ?? "am_michael";
 export const DEFAULT_SPEED = Number(process.env.KOKORO_SPEED ?? 1.15);

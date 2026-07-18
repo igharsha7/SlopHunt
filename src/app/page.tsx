@@ -264,7 +264,7 @@ export default async function HomePage() {
       </section>
 
       {/* ------------------------------------------------------------ KISSIES */}
-      <Kissies />
+      <Kissies entries={entries} />
 
       {/* ------------------------------------------------------------- FAQ */}
       <section id="faq" className="bg-grid-paper scroll-mt-20">
