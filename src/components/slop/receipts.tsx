@@ -1,3 +1,4 @@
+import { RevealGroup } from "@/components/gsap/reveal";
 import { ExternalIcon } from "@/components/icons";
 import type { Receipt } from "@/lib/slop";
 
@@ -17,7 +18,11 @@ export function Receipts({ receipts }: { receipts: Receipt[] }) {
         Real, still-maintained software that already does this. Found by the
         Originality Agent, not made up.
       </p>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <RevealGroup
+        y={24}
+        stagger={0.09}
+        className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      >
         {receipts.map((receipt) => (
           <a
             key={receipt.url}
@@ -37,7 +42,7 @@ export function Receipts({ receipts }: { receipts: Receipt[] }) {
             </p>
           </a>
         ))}
-      </div>
+      </RevealGroup>
     </section>
   );
 }

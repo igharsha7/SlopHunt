@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { signInWithGitHub, signOut } from "@/app/auth/actions";
 import { GitHubIcon } from "@/components/icons";
+import { Brand } from "@/components/site/brand";
 import { createClient } from "@/lib/supabase/server";
 
 const LINKS = [
@@ -25,15 +26,8 @@ export async function SiteNav() {
         aria-label="Primary"
         className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6"
       >
-        <Link
-          href="/"
-          className="group flex items-center gap-2 font-display text-xl font-black uppercase tracking-tight"
-        >
-          <span
-            aria-hidden
-            className="inline-block h-5 w-5 border-2 border-toxic bg-toxic transition-colors group-hover:bg-transparent"
-          />
-          SlopHunt
+        <Link href="/" className="flex shrink-0 items-center" aria-label="SlopHunt home">
+          <Brand size="nav" />
         </Link>
 
         <ul className="hidden items-center gap-1 md:flex">

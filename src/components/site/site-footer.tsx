@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { Brand } from "@/components/site/brand";
+
 const COLUMNS = [
   {
     heading: "The Site",
@@ -27,13 +29,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2 font-display text-2xl font-black uppercase">
-              <span
-                aria-hidden
-                className="inline-block h-5 w-5 border-2 border-toxic bg-toxic"
-              />
-              SlopHunt
-            </div>
+            <Brand size="footer" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ash">
               Product Hunt for slop. A directory of unoriginal software, built by
               an idea that is itself gloriously derivative.

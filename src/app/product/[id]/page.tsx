@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Reveal } from "@/components/gsap/reveal";
 import {
   ArrowIcon,
   ExternalIcon,
@@ -167,7 +168,7 @@ export default async function ProductPage({
           </div>
 
           {/* The roast */}
-          <section aria-labelledby="roast-heading">
+          <Reveal as="section" aria-labelledby="roast-heading">
             <h2
               id="roast-heading"
               className="font-display text-big font-black uppercase"
@@ -185,7 +186,7 @@ export default async function ProductPage({
                 </p>
               ))}
             </div>
-          </section>
+          </Reveal>
 
           <Receipts receipts={entry.receipts} />
 

@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SlopHunt
 
-## Getting Started
+**Product Hunt for slop. Submit your repo. Get roasted. Get ranked.**
 
-First, run the development server:
+An AI agent pipeline crawls your GitHub repo, finds the dead demo links and the
+`"final final v2"` commits, computes a Slop Score (0–100), writes a brutally
+specific roast in the voice of Deepak from Code Review, and puts it all on a
+public leaderboard — with a Product-Hunt-style page your repo never asked for.
+
+The full product spec lives in [docs/project-details.md](docs/project-details.md).
+
+## Stack
+
+- **Next.js 16** (App Router, Turbopack) + TypeScript + Tailwind v4
+- **Supabase** — Postgres, RLS, GitHub OAuth
+- **GSAP + ScrollTrigger** — scroll reveals, score count-up, hero choreography
+- **next/og** — dynamic per-repo share cards
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # fill in your keys
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The UI runs fully on demo fixtures until the database is provisioned:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Apply `supabase/migrations/0001_init.sql` in the Supabase SQL Editor.
+2. Enable the GitHub provider under Authentication → Providers.
+3. Set `SUPABASE_SECRET_KEY` in `.env.local` (Project Settings → API Keys).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Brand
 
-## Learn More
+Drop the wordmark at `public/text-logo.png` and the nav + footer pick it up
+automatically (they fall back to a typographic mark while it's missing).
 
-To learn more about Next.js, take a look at the following resources:
+## House rules
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Self-submission only.** You roast your own repos, or repos tagged `roast-me`.
+- **Roast the software, never the person.**
+- **Every joke cites evidence.** No crime in the crawl data, no joke.
+- **Leaked secrets are flagged, never displayed.**
+- Instant text path never waits on the video render.

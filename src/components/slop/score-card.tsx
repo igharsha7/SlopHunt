@@ -1,3 +1,8 @@
+"use client";
+
+import { useRef } from "react";
+
+import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import {
   BREAKDOWN_LABELS,
   scoreColor,
@@ -6,7 +11,15 @@ import {
   type Breakdown,
 } from "@/lib/slop";
 
-/** The big Slop Score reveal + five labelled sub-score bars. */
+/**
+ * The big Slop Score reveal + five labelled sub-score bars.
+ *
+ * The number counts up and the bars fill when the card scrolls into view —
+ * this is the screenshot moment, so it gets the most deliberate animation on
+ * the site. Server HTML carries the final values; the layout effect rewinds to
+ * zero in the same frame it arms the timeline, so crawlers and no-JS visitors
+ * always see the real score.
+ */
 export function ScoreCard({
   score,
   breakdown,
@@ -14,8 +27,43 @@ export function ScoreCard({
   score: number;
   breakdown: Breakdown;
 }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const numberRef = useRef<HTMLSpanElement>(null);
+
+  useGSAP(
+    () => {
+      const root = rootRef.current;
+      const numberEl = numberRef.current;
+      if (prefersReducedMotion() || !root || !numberEl) return;
+
+      const counter = { value: 0 };
+      const bars = gsap.utils.toArray<HTMLElement>("[data-score-bar]");
+
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: root, start: "top 82%", once: true },
+      });
+
+      // Rewind visuals only now that the timeline exists (pre-paint).
+      numberEl.textContent = "0";
+      tl.to(counter, {
+        value: score,
+        duration: 1.2,
+        ease: "power3.out",
+        onUpdate: () => {
+          numberEl.textContent = String(Math.round(counter.value));
+        },
+      }).fromTo(
+        bars,
+        { scaleX: 0, transformOrigin: "left center" },
+        { scaleX: 1, duration: 0.65, ease: "power2.out", stagger: 0.08 },
+        "-=0.9",
+      );
+    },
+    { scope: rootRef },
+  );
+
   return (
-    <div className="border-2 border-hairline-2 bg-slab">
+    <div ref={rootRef} className="border-2 border-hairline-2 bg-slab">
       <div className="border-b-2 border-hairline-2 p-6">
         <div className="flex items-center justify-between">
           <span className="font-display text-xs font-black uppercase tracking-widest text-ash">
@@ -31,6 +79,7 @@ export function ScoreCard({
         </div>
         <div className="mt-2 flex items-end gap-2">
           <span
+            ref={numberRef}
             className={`tabular font-display text-8xl font-black leading-none ${scoreColor(
               score,
             )}`}
@@ -69,6 +118,7 @@ export function ScoreCard({
                 aria-label={label}
               >
                 <div
+                  data-score-bar
                   className={`h-full ${scoreBg(value)}`}
                   style={{ width: `${value}%` }}
                 />

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { Reveal, RevealGroup } from "@/components/gsap/reveal";
 import { FilterTabs } from "@/components/leaderboard/filter-tabs";
 import { SlopRow } from "@/components/slop/slop-row";
 import { getAllTags, getLeaderboard, type LeaderboardRange } from "@/lib/queries";
@@ -46,7 +47,7 @@ export default async function LeaderboardPage({
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      <header className="border-b-2 border-hairline pb-8">
+      <Reveal as="header" y={16} className="border-b-2 border-hairline pb-8">
         <p className="font-display text-xs font-black uppercase tracking-widest text-toxic">
           Ranked by Slop Score
         </p>
@@ -57,7 +58,7 @@ export default async function LeaderboardPage({
           Higher is worse. Every entry self-submitted, every crime cited. Argue
           with the numbers — that&apos;s engagement.
         </p>
-      </header>
+      </Reveal>
 
       {/* Category award badges — each links to its filtered view. */}
       <section aria-label="Category awards" className="mt-8">
@@ -128,7 +129,12 @@ export default async function LeaderboardPage({
       </div>
 
       {entries.length > 0 ? (
-        <ol className="mt-8 border-t-2 border-hairline">
+        <RevealGroup
+          as="ol"
+          y={20}
+          stagger={0.05}
+          className="mt-8 border-t-2 border-hairline"
+        >
           {entries.map((entry, i) => (
             <SlopRow
               key={entry.id}
@@ -137,7 +143,7 @@ export default async function LeaderboardPage({
               award={awards.get(entry.id)}
             />
           ))}
-        </ol>
+        </RevealGroup>
       ) : (
         <div className="mt-8 border-2 border-dashed border-hairline-2 p-12 text-center">
           <p className="font-display text-2xl font-black uppercase text-ash">

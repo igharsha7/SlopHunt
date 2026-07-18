@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 
 import { SkullIcon } from "@/components/icons";
+import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
 /**
  * The 💀 reaction — SlopHunt's upvote. One per visitor, throttled client-side
@@ -43,14 +44,31 @@ export function SkullButton({
     () => false,
   );
 
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   const toggle = useCallback(() => {
-    if (localStorage.getItem(key) === "1") {
-      localStorage.removeItem(key);
-    } else {
+    const giving = localStorage.getItem(key) !== "1";
+    if (giving) {
       localStorage.setItem(key, "1");
+    } else {
+      localStorage.removeItem(key);
     }
     // Same-tab listeners don't get the native `storage` event — fire our own.
     window.dispatchEvent(new Event(EVENT));
+
+    // Juice: a punch when the skull lands, a small dip when it's taken back.
+    if (!prefersReducedMotion() && buttonRef.current) {
+      gsap.killTweensOf(buttonRef.current);
+      gsap.fromTo(
+        buttonRef.current,
+        { scale: giving ? 0.9 : 0.96 },
+        {
+          scale: 1,
+          duration: giving ? 0.5 : 0.25,
+          ease: giving ? "elastic.out(1.2, 0.45)" : "power2.out",
+        },
+      );
+    }
     // TODO(phase-5): POST /api/react to persist with IP throttle.
   }, [key]);
 
@@ -63,6 +81,7 @@ export function SkullButton({
 
   return (
     <button
+      ref={buttonRef}
       type="button"
       onClick={toggle}
       aria-pressed={reacted}

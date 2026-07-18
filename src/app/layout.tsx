@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Space_Mono } from "next/font/google";
 
+import { ScrollProgress } from "@/components/gsap/scroll-progress";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteNav } from "@/components/site/site-nav";
 
@@ -58,6 +59,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <ScrollProgress />
         <SiteNav />
         <main id="main" className="flex-1">
           {children}

@@ -1,3 +1,4 @@
+import { RevealGroup } from "@/components/gsap/reveal";
 import { CRIME_LABELS, type Crime } from "@/lib/slop";
 
 /** The crimes list, styled as a police evidence log. Every joke's receipt. */
@@ -12,7 +13,7 @@ export function CrimesReport({ crimes }: { crimes: Crime[] }) {
           {crimes.length} counts
         </span>
       </div>
-      <ol className="divide-y divide-hairline">
+      <RevealGroup as="ol" y={16} stagger={0.06} className="divide-y divide-hairline">
         {crimes.map((crime, i) => (
           <li key={i} className="flex gap-4 p-4">
             <span className="tabular shrink-0 font-display text-sm font-black text-ash-dim">
@@ -31,7 +32,7 @@ export function CrimesReport({ crimes }: { crimes: Crime[] }) {
             </div>
           </li>
         ))}
-      </ol>
+      </RevealGroup>
     </div>
   );
 }
