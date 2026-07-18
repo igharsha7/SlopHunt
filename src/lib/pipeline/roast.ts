@@ -1,15 +1,25 @@
 import "server-only";
 
-import { CRIME_LABELS, type Receipt } from "@/lib/slop";
+import type { Receipt } from "@/lib/slop";
 import type { CrawlResult } from "./github";
+import { writeRoastWithGrok } from "./grok";
+import {
+  ROAST_SYSTEM_PROMPT,
+  buildEvidence,
+  buildUserPrompt,
+  parseRoastJson,
+} from "./prompt";
 import type { ScoreResult } from "./score";
 
 /**
- * Roast writer. With ANTHROPIC_API_KEY set, Deepak is played by Claude under
- * the hard rules (evidence-only, software-never-person). Without it, a
- * deterministic composer stitches the crimes into a serviceable roast so the
- * pipeline stays fully functional — the LLM upgrades the jokes, it is not a
- * dependency.
+ * Roast writer, in preference order:
+ *
+ *   1. Grok (XAI_API_KEY)          — primary. Funniest register for dev humour.
+ *   2. Claude (ANTHROPIC_API_KEY)  — fallback when Grok is absent or errors.
+ *   3. Deterministic composer      — always works, no keys, no network.
+ *
+ * Every tier obeys the same hard rules and returns the same shape, so the
+ * pipeline never blocks on an API and the site is demoable with zero keys.
  */
 
 export interface RoastResult {
@@ -20,15 +30,7 @@ export interface RoastResult {
   model: string;
 }
 
-const SYSTEM_PROMPT = `You are "Deepak from Code Review" — a burnt-out senior engineer who has reviewed 40,000 pull requests. Dry, tired, devastating, secretly fair. You write comedy roasts of software repositories.
-
-HARD RULES, NON-NEGOTIABLE:
-- Roast the SOFTWARE, never the person. No jokes about the author's identity, nationality, appearance, or intelligence.
-- Every single joke must cite a specific item from the provided crimes list. No generic filler like "your code is bad".
-- Never reveal or restate any leaked secret value. Referring to the fact that one exists is fine.
-- If a crime mentions a leaked secret, tell them to rotate it. Today.
-
-Respond with ONLY a JSON object: {"video_script": "~110-130 words, spoken-word pacing, cold open, ends revealing the Slop Score", "page_roast": "150-250 words, receipts woven in, paragraphs separated by \\n\\n", "one_liner": "the most brutal line, under 100 chars", "tagline": "Product-Hunt-style tagline rewritten with contempt, under 80 chars"}`;
+const CLAUDE_MODEL = "claude-sonnet-5";
 
 async function claudeRoast(
   crawl: CrawlResult,
@@ -38,18 +40,7 @@ async function claudeRoast(
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
 
-  const model = "claude-sonnet-5";
-  const evidence = {
-    repo: `${crawl.meta.owner}/${crawl.meta.name}`,
-    description: crawl.meta.description,
-    stars: crawl.meta.stars,
-    slop_score: score.slop,
-    breakdown: score.breakdown,
-    crimes: score.crimes.map(
-      (c) => `[${CRIME_LABELS[c.category]}] ${c.evidence}${c.detail ? ` (${c.detail})` : ""}`,
-    ),
-    receipts: receipts.map((r) => `${r.name} — ${r.description} — ${r.url}`),
-  };
+  const evidence = buildEvidence(crawl, score, receipts);
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -60,15 +51,10 @@ async function claudeRoast(
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model,
-        max_tokens: 1500,
-        system: SYSTEM_PROMPT,
-        messages: [
-          {
-            role: "user",
-            content: `Write the roast for this repo. Evidence:\n${JSON.stringify(evidence, null, 2)}`,
-          },
-        ],
+        model: CLAUDE_MODEL,
+        max_tokens: 1600,
+        system: ROAST_SYSTEM_PROMPT,
+        messages: [{ role: "user", content: buildUserPrompt(evidence) }],
       }),
       signal: AbortSignal.timeout(30_000),
     });
@@ -78,19 +64,8 @@ async function claudeRoast(
       content: Array<{ type: string; text?: string }>;
     };
     const text = data.content.find((b) => b.type === "text")?.text ?? "";
-    const json = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)) as {
-      video_script: string;
-      page_roast: string;
-      one_liner: string;
-      tagline: string;
-    };
-    return {
-      videoScript: json.video_script,
-      pageRoast: json.page_roast,
-      oneLiner: json.one_liner.slice(0, 100),
-      tagline: json.tagline.slice(0, 80),
-      model,
-    };
+    const parsed = parseRoastJson(text);
+    return parsed ? { ...parsed, model: CLAUDE_MODEL } : null;
   } catch {
     return null;
   }
@@ -110,7 +85,7 @@ const CLOSERS = [
   "None of this is invented. That is the saddest part.",
 ];
 
-function templateRoast(
+export function templateRoast(
   crawl: CrawlResult,
   score: ScoreResult,
   receipts: Receipt[],
@@ -159,7 +134,9 @@ function templateRoast(
     `${name}. ${crawl.meta.description ?? "No description. Bold."}`,
     lines[0] ?? "",
     lines[1] ?? "",
-    `Slop Score: ${score.slop} out of one hundred. ${score.slop >= 75 ? "I need to sit down." : "It could be worse, which is not praise."}`,
+    `Slop Score: ${score.slop} out of one hundred. ${
+      score.slop >= 75 ? "I need to sit down." : "It could be worse, which is not praise."
+    }`,
   ]
     .filter(Boolean)
     .join(" ");
@@ -178,8 +155,11 @@ export async function writeRoast(
   score: ScoreResult,
   receipts: Receipt[],
 ): Promise<RoastResult> {
-  return (
-    (await claudeRoast(crawl, score, receipts)) ??
-    templateRoast(crawl, score, receipts)
-  );
+  const grok = await writeRoastWithGrok(crawl, score, receipts);
+  if (grok) return grok;
+
+  const claude = await claudeRoast(crawl, score, receipts);
+  if (claude) return claude;
+
+  return templateRoast(crawl, score, receipts);
 }
