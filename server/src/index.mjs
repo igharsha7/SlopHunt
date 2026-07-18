@@ -190,8 +190,46 @@ app.post("/api/submit", async (c) => {
   const slug = `${owner}--${name}`;
 
   let repoId = null;
+  let persistError = null;
   if (db) {
-    const { data } = await db
+    // Attribution first. The schema enforces `proof = 'oauth_owner' =>
+    // submitted_by is not null`, because the delete button is gated on the
+    // submitter — an unattributed oauth submission would be undeletable.
+    let submittedBy = null;
+    const byTopic = meta.topics.includes("roast-me");
+
+    if (login && !byTopic) {
+      const ghUser = await fetch(`https://api.github.com/users/${login}`, {
+        headers: {
+          accept: "application/vnd.github+json",
+          "user-agent": "slophunt-worker",
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+        },
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null);
+
+      if (ghUser?.id) {
+        const { data: userRow } = await db
+          .from("users")
+          .upsert(
+            {
+              github_id: ghUser.id,
+              github_login: ghUser.login,
+              avatar_url: ghUser.avatar_url ?? null,
+            },
+            { onConflict: "github_id" },
+          )
+          .select("id")
+          .single();
+        submittedBy = userRow?.id ?? null;
+      }
+    }
+
+    // Without a resolved user the only honest proof left is the topic.
+    const proof = submittedBy ? "oauth_owner" : "roast_me_topic";
+
+    const { data, error } = await db
       .from("repos")
       .upsert(
         {
@@ -206,7 +244,8 @@ app.post("/api/submit", async (c) => {
           open_issues: meta.openIssues,
           primary_lang: meta.language,
           pushed_at: meta.pushedAt,
-          proof: meta.topics.includes("roast-me") ? "roast_me_topic" : "oauth_owner",
+          submitted_by: submittedBy,
+          proof,
           status: "roasted",
         },
         { onConflict: "owner,name" },
@@ -214,6 +253,12 @@ app.post("/api/submit", async (c) => {
       .select("id")
       .single();
 
+    // Surface it. A silently swallowed write error looks like "persisted:
+    // false" with no cause, which cost real debugging time.
+    if (error) {
+      persistError = error.message;
+      console.error("[submit] repos upsert failed:", error.message);
+    }
     repoId = data?.id ?? null;
 
     if (repoId) {
@@ -293,6 +338,7 @@ app.post("/api/submit", async (c) => {
       model: roast.model,
     },
     persisted: Boolean(repoId),
+    ...(persistError ? { persistError } : {}),
     video: { status: "rendering", poll: `/api/video/${slug}` },
   });
 });

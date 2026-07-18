@@ -53,10 +53,15 @@ describe("pages render", () => {
     expect(res.status).toBe(404);
   });
 
-  itLive("the leaderboard shows an empty state, not a crash", async () => {
+  itLive("the leaderboard renders in every population state", async () => {
     const html = await (await fetch(`${BASE}/leaderboard`)).text();
     expect(html).not.toContain("Application error");
-    expect(html).toMatch(/Nothing here yet|rest of the wreckage/);
+    // Three valid states: no rows (empty state), 1-3 rows (podium only), or
+    // 4+ rows (podium plus the table). The earlier assertion missed the
+    // middle one and started failing the moment the first repo was roasted.
+    expect(html).toMatch(/Nothing here yet|Slop Score|rest of the wreckage/);
+    // The header is unconditional — its absence means a real render failure.
+    expect(html).toMatch(/leaderboard/i);
   });
 });
 

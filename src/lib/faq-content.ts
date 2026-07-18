@@ -29,4 +29,11 @@ export const FAQS = [
   },
 ] as const;
 
-export const REPO_URL = "https://github.com/igharsha7/SlopHunt";
+/**
+ * Public repo for the "open source — star it" links.
+ *
+ * Must point at a PUBLIC repo: a private one 404s for every visitor, which is
+ * worse than having no link. Override with NEXT_PUBLIC_REPO_URL.
+ */
+export const REPO_URL =
+  process.env.NEXT_PUBLIC_REPO_URL ?? "https://github.com/igharsha7/SlopHunt";
