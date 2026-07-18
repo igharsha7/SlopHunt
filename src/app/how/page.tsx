@@ -13,6 +13,8 @@ import {
 } from "@/components/site/stickers";
 import { ScoreCard } from "@/components/slop/score-card";
 import { VideoSlot } from "@/components/slop/video-slot";
+import { getEntry } from "@/lib/queries";
+import { scoreVerdict } from "@/lib/slop";
 
 export const metadata: Metadata = {
   title: "How it works",
@@ -21,10 +23,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * We ran the pipeline on ourselves before anyone else — the meta-joke is the
- * trust beat. A Product Hunt clone scoring low on originality is the point.
+ * We ran the pipeline on ourselves — the meta-joke is the trust beat. This
+ * reads the real row when SlopHunt has been roasted; the fallback is only
+ * used before that first self-submission, and is labelled as a sample.
  */
-const OUR_OWN_SCORE = {
+const SAMPLE_SCORE = {
   score: 32,
   breakdown: {
     originality: 61,
@@ -34,6 +37,22 @@ const OUR_OWN_SCORE = {
     vibeCheck: 44,
   },
 };
+
+async function getOurScore() {
+  for (const slug of ["igharsha7--SlopHunt", "nickthelegend--SlopHunt"]) {
+    const entry = await getEntry(slug);
+    if (entry) {
+      return {
+        score: entry.slopScore,
+        breakdown: entry.breakdown,
+        live: true as const,
+        oneLiner: entry.oneLiner,
+        slug: entry.slug,
+      };
+    }
+  }
+  return { ...SAMPLE_SCORE, live: false as const, oneLiner: null, slug: null };
+}
 
 const CRAWL_AGENTS = [
   {
@@ -81,7 +100,9 @@ const RULES = [
   },
 ];
 
-export default function HowPage() {
+export default async function HowPage() {
+  const ours = await getOurScore();
+
   return (
     <>
       {/* ------------------------------------------------------------- HERO */}
@@ -227,18 +248,29 @@ export default function HowPage() {
               the number can win. Higher is sloppier.
             </p>
             <p className="mt-4 max-w-md font-sans text-base font-bold leading-snug text-ink">
-              This card is real: we ran the pipeline on SlopHunt itself. A
-              Product Hunt clone was never going to ace originality.
+              {ours.live
+                ? "This card is live: it's SlopHunt's own row, read from the same database as every other roast. A Product Hunt clone was never going to ace originality."
+                : "This is a sample card. Once SlopHunt is submitted to itself, this reads its real row — same database as every other roast."}
             </p>
             <StickerLabel tilt="l" className="mt-5">
-              32/100 — &ldquo;annoyingly good&rdquo;. For now.
+              {ours.live
+                ? `${ours.score}/100 — ${scoreVerdict(ours.score).toLowerCase()}.`
+                : "Sample figures — not yet self-submitted."}
             </StickerLabel>
+            {ours.live && ours.slug ? (
+              <Link
+                href={`/product/${ours.slug}`}
+                className="press mt-5 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-5 py-2.5 font-display text-sm font-bold uppercase tracking-widest shadow-brut hover:bg-sun"
+              >
+                Read our own roast
+              </Link>
+            ) : null}
           </Reveal>
           <Reveal delay={0.1}>
             <div className="mx-auto w-full max-w-md">
               <ScoreCard
-                score={OUR_OWN_SCORE.score}
-                breakdown={OUR_OWN_SCORE.breakdown}
+                score={ours.score}
+                breakdown={ours.breakdown}
               />
             </div>
           </Reveal>

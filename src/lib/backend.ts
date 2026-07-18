@@ -62,8 +62,35 @@ export async function pollVideo(slug: string): Promise<VideoJob> {
   try {
     const res = await fetch(`${BACKEND_URL}/api/video/${encodeURIComponent(slug)}`);
     if (!res.ok) return { status: "unknown" };
-    return (await res.json()) as VideoJob;
+    const job = (await res.json()) as VideoJob;
+
+    // The backend returns a bare /renders/... path when the Storage upload
+    // didn't happen; make it absolute so the <video> can actually load it.
+    if (job.videoUrl?.startsWith("/")) {
+      job.videoUrl = `${BACKEND_URL}${job.videoUrl}`;
+    }
+    return job;
   } catch {
     return { status: "unknown" };
+  }
+}
+
+/** Persists a 💀 through the backend, falling back to the in-app route. */
+export async function sendReaction(
+  entryId: string,
+  fingerprint: string,
+  on: boolean,
+): Promise<number | null> {
+  const url = hasBackend() ? `${BACKEND_URL}/api/react` : "/api/react";
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ entryId, fingerprint, on }),
+    });
+    if (!res.ok) return null;
+    return ((await res.json()) as { skulls?: number }).skulls ?? null;
+  } catch {
+    return null;
   }
 }

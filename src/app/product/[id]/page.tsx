@@ -14,7 +14,7 @@ import { Receipts } from "@/components/slop/receipts";
 import { ScoreCard } from "@/components/slop/score-card";
 import { ShareButton } from "@/components/slop/share-button";
 import { SkullButton } from "@/components/slop/skull-button";
-import { VideoSlot } from "@/components/slop/video-slot";
+import { VideoWatcher } from "@/components/slop/video-watcher";
 import { getEntry } from "@/lib/queries";
 import { relativeTime, scoreVerdict } from "@/lib/slop";
 
@@ -205,10 +205,13 @@ export default async function ProductPage({
             <h2 className="mb-4 font-display text-sm font-black uppercase tracking-widest text-ash">
               Video Roast
             </h2>
-            <VideoSlot
-              status={entry.video.status}
-              url={entry.video.url}
+            {/* Polls the backend render job and swaps in the MP4 when it
+                lands — the page never blocks on it. */}
+            <VideoWatcher
+              slug={entry.slug}
               repoName={entry.name}
+              initialStatus={entry.video.status}
+              initialUrl={entry.video.url}
             />
           </div>
         </aside>

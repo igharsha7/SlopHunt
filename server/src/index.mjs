@@ -349,6 +349,30 @@ app.get("/api/video/:slug", (c) => {
   return c.json(job);
 });
 
+/**
+ * Serves rendered MP4s straight off disk. Supabase Storage is the durable
+ * home, but this makes the video viewable the instant the render finishes —
+ * and keeps the demo working if the upload fails.
+ */
+app.get("/renders/:file", async (c) => {
+  const file = c.req.param("file");
+  // Path traversal guard: only a bare slug.mp4 is ever addressable.
+  if (!/^[\w.-]+\.mp4$/.test(file)) return c.text("bad name", 400);
+
+  const path = join(ROOT, "video", "roast-video", "renders", file);
+  if (!existsSync(path)) return c.text("not found", 404);
+
+  const mp4 = await readFile(path);
+  return new Response(mp4, {
+    headers: {
+      "content-type": "video/mp4",
+      "content-length": String(mp4.length),
+      "cache-control": "public, max-age=3600",
+      "access-control-allow-origin": "*",
+    },
+  });
+});
+
 app.post("/api/react", async (c) => {
   const { entryId, fingerprint, on } = await c.req.json().catch(() => ({}));
   if (!entryId || !fingerprint || typeof on !== "boolean") {

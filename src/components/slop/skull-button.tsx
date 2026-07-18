@@ -3,6 +3,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 import { SkullIcon } from "@/components/icons";
+import { sendReaction } from "@/lib/backend";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
 /**
@@ -77,11 +78,8 @@ export function SkullButton({
       fingerprint = crypto.randomUUID();
       localStorage.setItem("slop:fingerprint", fingerprint);
     }
-    void fetch("/api/react", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ entryId, fingerprint, on: giving }),
-    }).catch(() => {});
+    // Routes to the tunnelled backend when configured, else the in-app route.
+    void sendReaction(entryId, fingerprint, giving);
   }, [key, entryId]);
 
   // initialCount is the stored total; this visitor's own skull is layered on top.
