@@ -17,7 +17,8 @@
     "video:script": "node scripts/grok-script.mjs",
     "video:voice": "node scripts/kokoro-tts.mjs",
     "server": "node server/src/index.mjs",
-    "tunnel": "cloudflared tunnel --url http://localhost:8787"
+    "tunnel": "cloudflared tunnel --url http://localhost:8787",
+    "db:verify": "node scripts/db-verify.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
