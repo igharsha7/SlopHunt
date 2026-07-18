@@ -25,7 +25,7 @@ type Table<Row, Generated extends keyof Row> = {
   Relationships: [];
 };
 
-export interface UserRow {
+export type UserRow = {
   id: string;
   github_id: number;
   github_login: string;
@@ -33,7 +33,7 @@ export interface UserRow {
   created_at: string;
 }
 
-export interface RepoRow {
+export type RepoRow = {
   id: string;
   owner: string;
   name: string;
@@ -55,7 +55,7 @@ export interface RepoRow {
   updated_at: string;
 }
 
-export interface CrawlRow {
+export type CrawlRow = {
   repo_id: string;
   readme: string | null;
   languages: Json;
@@ -74,7 +74,7 @@ export interface CrawlRow {
   crawled_at: string;
 }
 
-export interface ScoreRow {
+export type ScoreRow = {
   repo_id: string;
   slop_score: number;
   originality_deficit: number;
@@ -86,7 +86,7 @@ export interface ScoreRow {
   computed_at: string;
 }
 
-export interface RoastRow {
+export type RoastRow = {
   repo_id: string;
   video_script: string;
   page_roast: string;
@@ -96,7 +96,7 @@ export interface RoastRow {
   created_at: string;
 }
 
-export interface ReceiptRow {
+export type ReceiptRow = {
   id: string;
   repo_id: string;
   name: string;
@@ -105,7 +105,7 @@ export interface ReceiptRow {
   position: number;
 }
 
-export interface VideoRow {
+export type VideoRow = {
   repo_id: string;
   status: VideoStatus;
   job_id: string | null;
@@ -115,7 +115,7 @@ export interface VideoRow {
   updated_at: string;
 }
 
-export interface ReactionRow {
+export type ReactionRow = {
   id: string;
   repo_id: string;
   fingerprint: string;
@@ -157,13 +157,16 @@ export interface Database {
       >;
       reactions: Table<ReactionRow, "id" | "created_at">;
     };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
+    // `{ [_ in never]: never }` is the shape supabase-js expects for an empty
+    // group — Record<string, never> fails its GenericSchema constraint and
+    // silently degrades every table's types to `never`.
+    Views: { [_ in never]: never };
+    Functions: { [_ in never]: never };
     Enums: {
       submission_proof: SubmissionProof;
       repo_status: RepoStatus;
       video_status: VideoStatus;
     };
-    CompositeTypes: Record<string, never>;
+    CompositeTypes: { [_ in never]: never };
   };
 }

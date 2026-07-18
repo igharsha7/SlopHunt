@@ -1,65 +1,238 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+import { Faq } from "@/components/home/faq";
+import { RotatingWord } from "@/components/home/rotating-word";
+import { SubmitBox } from "@/components/home/submit-box";
+import { ArrowIcon, CheckIcon } from "@/components/icons";
+import { Marquee } from "@/components/site/marquee";
+import { SlopRow } from "@/components/slop/slop-row";
+import { getLeaderboard } from "@/lib/queries";
+import { computeAwards } from "@/lib/slop";
+
+export default async function HomePage() {
+  const entries = await getLeaderboard();
+  const awards = computeAwards(entries);
+  const top = entries.slice(0, 5);
+
+  const totalSkulls = entries.reduce((sum, e) => sum + e.skulls, 0);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      {/* ---------------------------------------------------------------- HERO */}
+      <section className="relative overflow-hidden border-b-2 border-hairline">
+        <div className="mx-auto max-w-7xl px-4 pb-16 pt-14 sm:px-6 sm:pb-24 sm:pt-20">
+          <div className="inline-flex items-center gap-2 border-2 border-hairline bg-slab px-3 py-1.5 text-[11px] uppercase tracking-widest text-ash">
+            <span className="inline-block h-2 w-2 animate-pulse bg-toxic" />
+            {entries.length} repos roasted · {totalSkulls.toLocaleString()} skulls
+            given
+          </div>
+
+          <h1 className="mt-6 font-display font-black uppercase text-mega">
+            Submit your repo.
+            <br />
+            Get <span className="text-stroke-toxic">roasted</span>.
+            <br />
+            Get ranked.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mt-6 max-w-2xl font-mono text-base leading-relaxed text-ash sm:text-lg">
+            Product Hunt&apos;s evil twin. An AI agent crawls your GitHub, finds
+            the{" "}
+            <span className="whitespace-nowrap font-bold text-bone">
+              <RotatingWord
+                words={[
+                  "dead demo link",
+                  '"final final v2"',
+                  "committed .env",
+                  "41 TODOs",
+                  "abandoned branch",
+                  "AI wrapper",
+                ]}
+              />
+            </span>{" "}
+            and scores the slop — on a public leaderboard you did not ask for.
           </p>
+
+          <div className="mt-10 max-w-2xl">
+            <SubmitBox />
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs uppercase tracking-widest text-ash-dim">
+            <span className="inline-flex items-center gap-1.5">
+              <CheckIcon className="h-4 w-4 text-toxic" /> Instant score
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <CheckIcon className="h-4 w-4 text-toxic" /> Already-exists receipts
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <CheckIcon className="h-4 w-4 text-toxic" /> Video roast
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      </section>
+
+      {/* ------------------------------------------------------------- MARQUEE */}
+      <div className="border-b-2 border-hairline bg-toxic py-3 text-void">
+        <Marquee
+          items={[
+            "THIS ALREADY EXISTS",
+            "THE DISAPPOINTMENT TAKES TIME",
+            "YOUR REPO, YOUR FUNERAL",
+            "NOBODY ASKED FOR THIS",
+            "GET RANKED",
+          ]}
+          duration={26}
+        />
+      </div>
+
+      {/* --------------------------------------------------------- LEADERBOARD */}
+      <section className="border-b-2 border-hairline">
+        <div className="mx-auto max-w-7xl px-4 pt-16 sm:px-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="font-display text-xs font-black uppercase tracking-widest text-toxic">
+                The Slop Leaderboard
+              </p>
+              <h2 className="mt-2 font-display font-black uppercase text-huge">
+                Today&apos;s worst
+              </h2>
+            </div>
+            <Link
+              href="/leaderboard"
+              className="press inline-flex items-center gap-2 border-2 border-bone px-4 py-2.5 font-display text-sm font-black uppercase tracking-widest hover:bg-bone hover:text-void"
+            >
+              See all
+              <ArrowIcon className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
+        <ol className="mt-8 border-t-2 border-hairline">
+          {top.map((entry, i) => (
+            <SlopRow
+              key={entry.id}
+              entry={entry}
+              rank={i + 1}
+              award={awards.get(entry.id)}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
+        </ol>
+      </section>
+
+      {/* ------------------------------------------------------------- HOW */}
+      <section id="how" className="scroll-mt-20 border-b-2 border-hairline">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+          <h2 className="max-w-3xl font-display font-black uppercase text-huge">
+            Four agents. One verdict.
+          </h2>
+          <p className="mt-4 max-w-xl text-ash">
+            Paste a URL. The pipeline crawls the repo and its site in parallel,
+            hunts for prior art, scores the slop, and writes the roast. Text and
+            score land in under thirty seconds.
+          </p>
+
+          <ol className="mt-12 grid gap-px border-2 border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                n: "01",
+                t: "Crawl",
+                d: "README, 100 commits, languages, file tree, dead demo links, committed secrets.",
+              },
+              {
+                n: "02",
+                t: "Hunt receipts",
+                d: "Web + GitHub search for the 2–3 real products that already do this.",
+              },
+              {
+                n: "03",
+                t: "Score",
+                d: "Five deterministic-ish sub-scores and a citable crimes list. No joke without evidence.",
+              },
+              {
+                n: "04",
+                t: "Roast",
+                d: "Deepak reads your crimes back to you. Instant page now, video when it renders.",
+              },
+            ].map((step) => (
+              <li key={step.n} className="bg-void p-6">
+                <div className="font-display text-4xl font-black text-toxic">
+                  {step.n}
+                </div>
+                <h3 className="mt-4 font-display text-xl font-black uppercase">
+                  {step.t}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-ash">{step.d}</p>
+              </li>
+            ))}
+          </ol>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* -------------------------------------------------------- CRIMES BAND */}
+      <section className="border-b-2 border-hairline bg-slab">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+          <p className="font-display text-xs font-black uppercase tracking-widest text-toxic">
+            A sample of crimes
+          </p>
+          <h2 className="mt-2 max-w-3xl font-display font-black uppercase text-huge">
+            Every joke cites evidence
+          </h2>
+          <ul className="mt-10 grid gap-x-10 gap-y-4 sm:grid-cols-2">
+            {[
+              "README promises AI. It is three if-statements.",
+              'Last commit: "final final v2" — 14 months ago.',
+              "node_modules committed. 12,400 files in version control.",
+              "The $49/month tier has no auth and no database.",
+              "deleteTask() is public with no access control.",
+              "requirements.txt pins an SDK that no longer imports.",
+              "This already exists. Here are three links.",
+              "487 commits. Forty-one of them say 'update'.",
+            ].map((crime) => (
+              <li
+                key={crime}
+                className="flex items-start gap-3 border-b border-hairline py-3"
+              >
+                <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-toxic" />
+                <span className="text-bone">{crime}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- FAQ */}
+      <section id="faq" className="scroll-mt-20">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+          <h2 className="font-display font-black uppercase text-huge">
+            Questions you
+            <br />
+            should have asked
+          </h2>
+          <div className="mt-10">
+            <Faq />
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- CTA */}
+      <section className="border-t-2 border-hairline bg-toxic text-void">
+        <div className="mx-auto max-w-7xl px-4 py-20 text-center sm:px-6">
+          <h2 className="mx-auto max-w-4xl font-display font-black uppercase text-huge">
+            Your repo is already slop.
+            <br />
+            Might as well rank.
+          </h2>
+          <div className="mx-auto mt-10 max-w-xl">
+            <Link
+              href="/submit"
+              className="press inline-flex items-center gap-3 border-2 border-void bg-void px-8 py-4 font-display text-lg font-black uppercase tracking-widest text-toxic hover:bg-slab"
+            >
+              Submit your repo
+              <ArrowIcon className="h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
