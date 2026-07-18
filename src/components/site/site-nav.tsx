@@ -1,21 +1,40 @@
 import Link from "next/link";
 
 import { signInWithGitHub, signOut } from "@/app/auth/actions";
-import { GitHubIcon } from "@/components/icons";
+import { GitHubIcon, StarIcon } from "@/components/icons";
 import { Brand } from "@/components/site/brand";
+import { REPO_URL } from "@/lib/faq-content";
 import { createClient } from "@/lib/supabase/server";
 
 const LINKS = [
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/how", label: "How it works" },
-  { href: "/#faq", label: "FAQ" },
+  { href: "/faq", label: "FAQ" },
 ];
+
+/** Live star count for the open-source badge; null hides the number. */
+async function getStarCount(): Promise<number | null> {
+  try {
+    const res = await fetch(
+      "https://api.github.com/repos/igharsha7/SlopHunt",
+      { next: { revalidate: 3600 } },
+    );
+    if (!res.ok) return null;
+    const data = (await res.json()) as { stargazers_count?: number };
+    return data.stargazers_count ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export async function SiteNav() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [
+    {
+      data: { user },
+    },
+    stars,
+  ] = await Promise.all([supabase.auth.getUser(), getStarCount()]);
 
   const login = user?.user_metadata?.user_name as string | undefined;
   const avatar = user?.user_metadata?.avatar_url as string | undefined;
@@ -44,6 +63,16 @@ export async function SiteNav() {
         </ul>
 
         <div className="flex items-center gap-2">
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Star SlopHunt on GitHub"
+            className="press hidden items-center gap-1.5 rounded-full border border-ink bg-paper px-3 py-2 font-sans text-xs font-bold uppercase tracking-widest text-ink shadow-brut-sm hover:bg-sun sm:flex"
+          >
+            <StarIcon className="h-3.5 w-3.5" />
+            {stars !== null ? <span className="tabular">{stars}</span> : "Star"}
+          </a>
           {user ? (
             <>
               <Link

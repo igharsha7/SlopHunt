@@ -15,15 +15,10 @@ import { ScoreCard } from "@/components/slop/score-card";
 import { ShareButton } from "@/components/slop/share-button";
 import { SkullButton } from "@/components/slop/skull-button";
 import { VideoSlot } from "@/components/slop/video-slot";
-import { getAllSlugs, getEntry } from "@/lib/queries";
+import { getEntry } from "@/lib/queries";
 import { relativeTime, scoreVerdict } from "@/lib/slop";
 
 type Params = { id: string };
-
-export async function generateStaticParams() {
-  const slugs = await getAllSlugs();
-  return slugs.map((slug) => ({ id: encodeURIComponent(slug) }));
-}
 
 export async function generateMetadata({
   params,

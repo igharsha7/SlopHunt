@@ -69,8 +69,20 @@ export function SkullButton({
         },
       );
     }
-    // TODO(phase-5): POST /api/react to persist with IP throttle.
-  }, [key]);
+
+    // Persist server-side. Fire-and-forget: the optimistic UI already moved,
+    // and a failed write just means the count reconciles on next load.
+    let fingerprint = localStorage.getItem("slop:fingerprint");
+    if (!fingerprint) {
+      fingerprint = crypto.randomUUID();
+      localStorage.setItem("slop:fingerprint", fingerprint);
+    }
+    void fetch("/api/react", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ entryId, fingerprint, on: giving }),
+    }).catch(() => {});
+  }, [key, entryId]);
 
   // initialCount is the stored total; this visitor's own skull is layered on top.
   const count = initialCount + (reacted ? 1 : 0);

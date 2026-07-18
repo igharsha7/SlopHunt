@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import { GitHubIcon } from "@/components/icons";
 import { Brand } from "@/components/site/brand";
+import { REPO_URL } from "@/lib/faq-content";
 
 const COLUMNS = [
   {
@@ -9,7 +11,7 @@ const COLUMNS = [
       { href: "/leaderboard", label: "Leaderboard" },
       { href: "/submit", label: "Submit a repo" },
       { href: "/how", label: "How it works" },
-      { href: "/#faq", label: "FAQ" },
+      { href: "/faq", label: "FAQ" },
     ],
   },
   {
@@ -37,6 +39,15 @@ export function SiteFooter() {
             <p className="mt-4 text-xs uppercase tracking-widest text-ash-dim">
               Self-submission only. We roast the software, never the person.
             </p>
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="press mt-5 inline-flex items-center gap-2 rounded-full border border-ink bg-paper px-4 py-2 font-sans text-xs font-bold uppercase tracking-widest text-ink shadow-brut-sm hover:bg-sun"
+            >
+              <GitHubIcon className="h-4 w-4" />
+              Open source — star it
+            </a>
           </div>
 
           {COLUMNS.map((column) => (
