@@ -49,6 +49,8 @@ function encodeWav(samples, sampleRate) {
   buf.writeUInt16LE(2, 32);
   buf.writeUInt16LE(16, 34);
   buf.write("data", 36);
+  buf.writeUInt32LE(samples.length * 2, 40); // data chunk size — omitting this
+  // leaves a zero-length chunk: ffmpeg reads to EOF anyway, strict readers see silence.
   for (let i = 0; i < samples.length; i++) {
     const s = Math.max(-1, Math.min(1, samples[i]));
     buf.writeInt16LE(Math.round(s * 32767), 44 + i * 2);

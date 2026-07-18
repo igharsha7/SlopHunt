@@ -1,0 +1,695 @@
+{
+  "voice": "am_michael",
+  "speed": 1.05,
+  "sampleRate": 24000,
+  "totalDuration": 55,
+  "frames": [
+    {
+      "frame": 1,
+      "id": "01",
+      "beat": "Hook",
+      "text": "Every launch page tells you your project is brilliant. None of them have read your commit history.",
+      "start": 0,
+      "duration": 6.55,
+      "frameDuration": 7,
+      "words": [
+        {
+          "word": "Every",
+          "start": 0,
+          "duration": 0.76
+        },
+        {
+          "word": "launch",
+          "start": 0.76,
+          "duration": 0.25
+        },
+        {
+          "word": "page",
+          "start": 1.02,
+          "duration": 0.25
+        },
+        {
+          "word": "tells",
+          "start": 1.27,
+          "duration": 0.25
+        },
+        {
+          "word": "you",
+          "start": 1.52,
+          "duration": 0.25
+        },
+        {
+          "word": "your",
+          "start": 1.78,
+          "duration": 0.25
+        },
+        {
+          "word": "project",
+          "start": 2.03,
+          "duration": 0.51
+        },
+        {
+          "word": "is",
+          "start": 2.54,
+          "duration": 0.25
+        },
+        {
+          "word": "brilliant.",
+          "start": 2.79,
+          "duration": 0.74
+        },
+        {
+          "word": "None",
+          "start": 3.53,
+          "duration": 0.25
+        },
+        {
+          "word": "of",
+          "start": 3.78,
+          "duration": 0.25
+        },
+        {
+          "word": "them",
+          "start": 4.04,
+          "duration": 0.25
+        },
+        {
+          "word": "have",
+          "start": 4.29,
+          "duration": 0.25
+        },
+        {
+          "word": "read",
+          "start": 4.54,
+          "duration": 0.25
+        },
+        {
+          "word": "your",
+          "start": 4.8,
+          "duration": 0.25
+        },
+        {
+          "word": "commit",
+          "start": 5.05,
+          "duration": 0.51
+        },
+        {
+          "word": "history.",
+          "start": 5.56,
+          "duration": 0.99
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "id": "02",
+      "beat": "Problem",
+      "text": "Product Hunt is a hype machine. Congratulations, rocket emoji. Nobody mentions the demo link died fourteen months ago.",
+      "start": 7,
+      "duration": 9.48,
+      "frameDuration": 9.92,
+      "words": [
+        {
+          "word": "Product",
+          "start": 7,
+          "duration": 0.52
+        },
+        {
+          "word": "Hunt",
+          "start": 7.52,
+          "duration": 0.26
+        },
+        {
+          "word": "is",
+          "start": 7.78,
+          "duration": 0.26
+        },
+        {
+          "word": "a",
+          "start": 8.04,
+          "duration": 0.26
+        },
+        {
+          "word": "hype",
+          "start": 8.29,
+          "duration": 0.26
+        },
+        {
+          "word": "machine.",
+          "start": 8.55,
+          "duration": 0.75
+        },
+        {
+          "word": "Congratulations,",
+          "start": 9.3,
+          "duration": 1.53
+        },
+        {
+          "word": "rocket",
+          "start": 10.83,
+          "duration": 0.52
+        },
+        {
+          "word": "emoji.",
+          "start": 11.35,
+          "duration": 1.01
+        },
+        {
+          "word": "Nobody",
+          "start": 12.36,
+          "duration": 0.78
+        },
+        {
+          "word": "mentions",
+          "start": 13.14,
+          "duration": 0.52
+        },
+        {
+          "word": "the",
+          "start": 13.65,
+          "duration": 0.26
+        },
+        {
+          "word": "demo",
+          "start": 13.91,
+          "duration": 0.52
+        },
+        {
+          "word": "link",
+          "start": 14.43,
+          "duration": 0.26
+        },
+        {
+          "word": "died",
+          "start": 14.69,
+          "duration": 0.26
+        },
+        {
+          "word": "fourteen",
+          "start": 14.95,
+          "duration": 0.52
+        },
+        {
+          "word": "months",
+          "start": 15.47,
+          "duration": 0.26
+        },
+        {
+          "word": "ago.",
+          "start": 15.72,
+          "duration": 0.75
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "id": "03",
+      "beat": "How it works",
+      "text": "So we built the opposite. Paste a GitHub URL. Four agents read your README, your last hundred commits, and the rest of the internet — all at once.",
+      "start": 16.92,
+      "duration": 10.6,
+      "frameDuration": 11.05,
+      "words": [
+        {
+          "word": "So",
+          "start": 16.92,
+          "duration": 0.26
+        },
+        {
+          "word": "we",
+          "start": 17.18,
+          "duration": 0.26
+        },
+        {
+          "word": "built",
+          "start": 17.44,
+          "duration": 0.26
+        },
+        {
+          "word": "the",
+          "start": 17.69,
+          "duration": 0.26
+        },
+        {
+          "word": "opposite.",
+          "start": 17.95,
+          "duration": 1
+        },
+        {
+          "word": "Paste",
+          "start": 18.95,
+          "duration": 0.26
+        },
+        {
+          "word": "a",
+          "start": 19.2,
+          "duration": 0.26
+        },
+        {
+          "word": "GitHub",
+          "start": 19.46,
+          "duration": 0.51
+        },
+        {
+          "word": "URL.",
+          "start": 19.97,
+          "duration": 0.49
+        },
+        {
+          "word": "Four",
+          "start": 20.46,
+          "duration": 0.26
+        },
+        {
+          "word": "agents",
+          "start": 20.71,
+          "duration": 0.51
+        },
+        {
+          "word": "read",
+          "start": 21.23,
+          "duration": 0.26
+        },
+        {
+          "word": "your",
+          "start": 21.48,
+          "duration": 0.26
+        },
+        {
+          "word": "README,",
+          "start": 21.74,
+          "duration": 0.49
+        },
+        {
+          "word": "your",
+          "start": 22.22,
+          "duration": 0.26
+        },
+        {
+          "word": "last",
+          "start": 22.48,
+          "duration": 0.26
+        },
+        {
+          "word": "hundred",
+          "start": 22.74,
+          "duration": 0.51
+        },
+        {
+          "word": "commits,",
+          "start": 23.25,
+          "duration": 0.74
+        },
+        {
+          "word": "and",
+          "start": 23.99,
+          "duration": 0.26
+        },
+        {
+          "word": "the",
+          "start": 24.25,
+          "duration": 0.26
+        },
+        {
+          "word": "rest",
+          "start": 24.5,
+          "duration": 0.26
+        },
+        {
+          "word": "of",
+          "start": 24.76,
+          "duration": 0.26
+        },
+        {
+          "word": "the",
+          "start": 25.02,
+          "duration": 0.26
+        },
+        {
+          "word": "internet",
+          "start": 25.27,
+          "duration": 0.77
+        },
+        {
+          "word": "—",
+          "start": 26.04,
+          "duration": 0.49
+        },
+        {
+          "word": "all",
+          "start": 26.53,
+          "duration": 0.26
+        },
+        {
+          "word": "at",
+          "start": 26.78,
+          "duration": 0.26
+        },
+        {
+          "word": "once.",
+          "start": 27.04,
+          "duration": 0.49
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "id": "04",
+      "beat": "The score",
+      "text": "Thirty seconds later, a Slop Score out of a hundred. Five sub-scores, computed from dates and counts. Not vibes.",
+      "start": 27.97,
+      "duration": 8.18,
+      "frameDuration": 8.63,
+      "words": [
+        {
+          "word": "Thirty",
+          "start": 27.97,
+          "duration": 0.49
+        },
+        {
+          "word": "seconds",
+          "start": 28.46,
+          "duration": 0.49
+        },
+        {
+          "word": "later,",
+          "start": 28.95,
+          "duration": 0.71
+        },
+        {
+          "word": "a",
+          "start": 29.66,
+          "duration": 0.24
+        },
+        {
+          "word": "Slop",
+          "start": 29.9,
+          "duration": 0.24
+        },
+        {
+          "word": "Score",
+          "start": 30.15,
+          "duration": 0.24
+        },
+        {
+          "word": "out",
+          "start": 30.39,
+          "duration": 0.24
+        },
+        {
+          "word": "of",
+          "start": 30.63,
+          "duration": 0.24
+        },
+        {
+          "word": "a",
+          "start": 30.88,
+          "duration": 0.24
+        },
+        {
+          "word": "hundred.",
+          "start": 31.12,
+          "duration": 0.71
+        },
+        {
+          "word": "Five",
+          "start": 31.83,
+          "duration": 0.24
+        },
+        {
+          "word": "sub-scores,",
+          "start": 32.07,
+          "duration": 0.95
+        },
+        {
+          "word": "computed",
+          "start": 33.03,
+          "duration": 0.73
+        },
+        {
+          "word": "from",
+          "start": 33.76,
+          "duration": 0.24
+        },
+        {
+          "word": "dates",
+          "start": 34,
+          "duration": 0.49
+        },
+        {
+          "word": "and",
+          "start": 34.49,
+          "duration": 0.24
+        },
+        {
+          "word": "counts.",
+          "start": 34.73,
+          "duration": 0.46
+        },
+        {
+          "word": "Not",
+          "start": 35.2,
+          "duration": 0.24
+        },
+        {
+          "word": "vibes.",
+          "start": 35.44,
+          "duration": 0.71
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "id": "05",
+      "beat": "The evidence",
+      "text": "Every line cites evidence. The commit that just says fix. The dead demo. The three projects that already do this.",
+      "start": 36.6,
+      "duration": 8.35,
+      "frameDuration": 8.8,
+      "words": [
+        {
+          "word": "Every",
+          "start": 36.6,
+          "duration": 0.75
+        },
+        {
+          "word": "line",
+          "start": 37.35,
+          "duration": 0.25
+        },
+        {
+          "word": "cites",
+          "start": 37.59,
+          "duration": 0.5
+        },
+        {
+          "word": "evidence.",
+          "start": 38.09,
+          "duration": 0.97
+        },
+        {
+          "word": "The",
+          "start": 39.06,
+          "duration": 0.25
+        },
+        {
+          "word": "commit",
+          "start": 39.31,
+          "duration": 0.5
+        },
+        {
+          "word": "that",
+          "start": 39.81,
+          "duration": 0.25
+        },
+        {
+          "word": "just",
+          "start": 40.05,
+          "duration": 0.25
+        },
+        {
+          "word": "says",
+          "start": 40.3,
+          "duration": 0.25
+        },
+        {
+          "word": "fix.",
+          "start": 40.55,
+          "duration": 0.47
+        },
+        {
+          "word": "The",
+          "start": 41.02,
+          "duration": 0.25
+        },
+        {
+          "word": "dead",
+          "start": 41.27,
+          "duration": 0.25
+        },
+        {
+          "word": "demo.",
+          "start": 41.52,
+          "duration": 0.72
+        },
+        {
+          "word": "The",
+          "start": 42.24,
+          "duration": 0.25
+        },
+        {
+          "word": "three",
+          "start": 42.49,
+          "duration": 0.25
+        },
+        {
+          "word": "projects",
+          "start": 42.74,
+          "duration": 0.5
+        },
+        {
+          "word": "that",
+          "start": 43.24,
+          "duration": 0.25
+        },
+        {
+          "word": "already",
+          "start": 43.48,
+          "duration": 0.75
+        },
+        {
+          "word": "do",
+          "start": 44.23,
+          "duration": 0.25
+        },
+        {
+          "word": "this.",
+          "start": 44.48,
+          "duration": 0.47
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "id": "06",
+      "beat": "The video",
+      "text": "Then it writes a vertical video roast, and ranks you in public.",
+      "start": 45.4,
+      "duration": 4.65,
+      "frameDuration": 5.1,
+      "words": [
+        {
+          "word": "Then",
+          "start": 45.4,
+          "duration": 0.25
+        },
+        {
+          "word": "it",
+          "start": 45.65,
+          "duration": 0.25
+        },
+        {
+          "word": "writes",
+          "start": 45.89,
+          "duration": 0.49
+        },
+        {
+          "word": "a",
+          "start": 46.39,
+          "duration": 0.25
+        },
+        {
+          "word": "vertical",
+          "start": 46.64,
+          "duration": 0.74
+        },
+        {
+          "word": "video",
+          "start": 47.38,
+          "duration": 0.49
+        },
+        {
+          "word": "roast,",
+          "start": 47.87,
+          "duration": 0.47
+        },
+        {
+          "word": "and",
+          "start": 48.34,
+          "duration": 0.25
+        },
+        {
+          "word": "ranks",
+          "start": 48.59,
+          "duration": 0.25
+        },
+        {
+          "word": "you",
+          "start": 48.84,
+          "duration": 0.25
+        },
+        {
+          "word": "in",
+          "start": 49.09,
+          "duration": 0.25
+        },
+        {
+          "word": "public.",
+          "start": 49.33,
+          "duration": 0.72
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "id": "07",
+      "beat": "Call to action",
+      "text": "SlopHunt. Submit your repo. Get roasted. Get ranked.",
+      "start": 50.5,
+      "duration": 4.05,
+      "frameDuration": 4.5,
+      "words": [
+        {
+          "word": "SlopHunt.",
+          "start": 50.5,
+          "duration": 0.71
+        },
+        {
+          "word": "Submit",
+          "start": 51.21,
+          "duration": 0.49
+        },
+        {
+          "word": "your",
+          "start": 51.7,
+          "duration": 0.24
+        },
+        {
+          "word": "repo.",
+          "start": 51.94,
+          "duration": 0.71
+        },
+        {
+          "word": "Get",
+          "start": 52.65,
+          "duration": 0.24
+        },
+        {
+          "word": "roasted.",
+          "start": 52.89,
+          "duration": 0.71
+        },
+        {
+          "word": "Get",
+          "start": 53.6,
+          "duration": 0.24
+        },
+        {
+          "word": "ranked.",
+          "start": 53.84,
+          "duration": 0.71
+        }
+      ]
+    }
+  ]
+}

@@ -57,3 +57,10 @@ video/roast-video/*.mp3
 
 # vercel
 .vercel
+
+# launch video build artifacts (regenerate: npm run video:launch)
+videos/*/renders/
+videos/*/audio/
+videos/*/capture/
+videos/*/node_modules
+videos/*/.hyperframes/

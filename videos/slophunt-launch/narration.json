@@ -1,0 +1,30 @@
+[
+  {
+    "beat": "Hook",
+    "text": "Every launch page tells you your project is brilliant. None of them have read your commit history."
+  },
+  {
+    "beat": "Problem",
+    "text": "Product Hunt is a hype machine. Congratulations, rocket emoji. Nobody mentions the demo link died fourteen months ago."
+  },
+  {
+    "beat": "How it works",
+    "text": "So we built the opposite. Paste a GitHub URL. Four agents read your README, your last hundred commits, and the rest of the internet — all at once."
+  },
+  {
+    "beat": "The score",
+    "text": "Thirty seconds later, a Slop Score out of a hundred. Five sub-scores, computed from dates and counts. Not vibes."
+  },
+  {
+    "beat": "The evidence",
+    "text": "Every line cites evidence. The commit that just says fix. The dead demo. The three projects that already do this."
+  },
+  {
+    "beat": "The video",
+    "text": "Then it writes a vertical video roast, and ranks you in public."
+  },
+  {
+    "beat": "Call to action",
+    "text": "SlopHunt. Submit your repo. Get roasted. Get ranked."
+  }
+]
