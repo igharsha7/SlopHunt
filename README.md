@@ -1,44 +1,117 @@
-# SlopHunt
+<p align="center">
+  <img src="./public/text-logo.png" alt="SlopHunt" width="320" />
+</p>
 
-**Product Hunt for slop. Submit your repo. Get roasted. Get ranked.**
+<h1 align="center">Product Hunt for slop.</h1>
 
-An AI agent pipeline crawls your GitHub repo, finds the dead demo links and the
-`"final final v2"` commits, computes a Slop Score (0–100), writes a brutally
-specific roast in the voice of Deepak from Code Review, and puts it all on a
-public leaderboard — with a Product-Hunt-style page your repo never asked for.
+<p align="center">
+  <strong>Submit your repo. Get roasted. Get ranked.</strong><br />
+  An evidence-backed AI code review with the emotional support removed.
+</p>
 
-The full product spec lives in [docs/project-details.md](docs/project-details.md).
+<p align="center">
+  <a href="#watch-the-demo">Watch the demo</a> ·
+  <a href="#run-it-locally">Run locally</a> ·
+  <a href="./docs/project-details.md">Read the build spec</a>
+</p>
 
-## Stack
+## Watch the demo
 
-- **Next.js 16** (App Router, Turbopack) + TypeScript + Tailwind v4
-- **Supabase** — Postgres, RLS, GitHub OAuth
-- **GSAP + ScrollTrigger** — scroll reveals, score count-up, hero choreography
-- **next/og** — dynamic per-repo share cards
+<p align="center">
+  <a href="./Video.mp4" title="Watch the SlopHunt demo">
+    <img src="./public/readme-assets/slophunt-demo.jpg" alt="SlopHunt demo — four agents, one verdict" width="860" />
+  </a>
+</p>
 
-## Getting started
+<p align="center">
+  <strong>▶ <a href="./Video.mp4">Watch the 2m 10s demo</a></strong><br />
+  Click the preview to open the full video.
+</p>
+
+## What is SlopHunt?
+
+SlopHunt is Product Hunt's evil twin. Developers submit their own GitHub repos
+to receive a brutally specific, evidence-backed roast, a **Slop Score™**, and a
+public product page their project never asked for.
+
+The point is not to dunk on people. It is to give abandoned side projects the
+honest feedback—and occasionally the attention—they were never going to get
+from “Congrats on the launch! 🚀”.
+
+## The loop
+
+| Step | What happens |
+| --- | --- |
+| **01 — Submit** | Paste a GitHub repository you own or that carries the `roast-me` topic. |
+| **02 — Investigate** | Agents crawl the README, commits, file tree, languages, issues, site, and similar products. |
+| **03 — Roast** | Deepak from Code Review turns specific evidence into a dry, devastating verdict. |
+| **04 — Rank** | The repo gets a Product-Hunt-style page, a Slop Score, receipts, and a place on the leaderboard. |
+
+The text roast and score are instant. Video rendering is intentionally
+asynchronous—the disappointment takes time.
+
+## What gets judged
+
+- **Originality Deficit** — how many existing products already do this.
+- **Abandonment Index** — commit recency and frequency decay.
+- **README Cope Level** — promises, badges, “coming soon,” and dead demos.
+- **Commit Poetry** — `fix`, `wip`, `asdf`, and the timeless `final final v2`.
+- **Vibe Check** — TODO density, dead code, suspicious files, and other crimes
+  against a peaceful codebase.
+
+Every roast must cite real crawl data. No evidence, no joke.
+
+## Built with
+
+- **Next.js 16**, TypeScript, Tailwind CSS v4, and GSAP
+- **Supabase** for Postgres, RLS, GitHub OAuth, and storage
+- **GitHub REST API** for repository intelligence
+- **Grok** for roast writing, with Claude and deterministic fallbacks
+- **HyperFrames + Kokoro** for the asynchronous local roast-video pipeline
+- **next/og** for share cards
+
+## Run it locally
 
 ```bash
 npm install
-cp .env.example .env.local   # fill in your keys
-npm run dev                  # http://localhost:3000
+cp .env.example .env.local
+npm run dev
 ```
 
-The UI runs fully on demo fixtures until the database is provisioned:
+Open [http://localhost:3000](http://localhost:3000). The interface works with
+demo fixtures while you configure Supabase and external services.
+
+For the full stack:
 
 1. Apply `supabase/migrations/0001_init.sql` in the Supabase SQL Editor.
-2. Enable the GitHub provider under Authentication → Providers.
-3. Set `SUPABASE_SECRET_KEY` in `.env.local` (Project Settings → API Keys).
+2. Enable GitHub under Supabase Authentication → Providers.
+3. Fill in the server-only secrets in `.env.local`; never commit this file.
+4. Start the local render backend with `npm run server` when testing video.
 
-### Brand
+### Useful commands
 
-Drop the wordmark at `public/text-logo.png` and the nav + footer pick it up
-automatically (they fall back to a typographic mark while it's missing).
+```bash
+npm run lint
+npm test
+npm run db:verify
+npm run video:render  # requires the local HyperFrames renderer and ffmpeg
+```
 
 ## House rules
 
-- **Self-submission only.** You roast your own repos, or repos tagged `roast-me`.
+- **Self-submission only.** Roast your own repository, or one explicitly tagged
+  `roast-me`.
 - **Roast the software, never the person.**
-- **Every joke cites evidence.** No crime in the crawl data, no joke.
-- **Leaked secrets are flagged, never displayed.**
-- Instant text path never waits on the video render.
+- **Keep receipts.** Every joke is grounded in crawl data.
+- **Protect secrets.** Possible leaks are flagged, never displayed.
+- **Never block the instant path on video.**
+
+## Documentation
+
+- [Build spec](./docs/project-details.md)
+- [HyperFrames + LangGraph implementation guide](./docs/hyperframes-implentation.md)
+- [Environment variable reference](./.env.example)
+
+---
+
+Built for developers with unfinished repos and the courage to hear about them.
