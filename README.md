@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/igharsha7/SlopHunt/releases/download/v1.0/launch-video.mp4"><strong>▶ Launch film — 55s, with sound</strong></a>
+  <a href="https://github.com/igharsha7/SlopHunt/releases/download/v1.0/launch-video.mp4"><strong>▶ Launch film — 54s, with sound</strong></a>
   &nbsp;·&nbsp;
   <a href="https://github.com/igharsha7/SlopHunt/releases/download/v1.0/Video.mp4"><strong>▶ Full walkthrough — 2m 10s</strong></a>
 </p>

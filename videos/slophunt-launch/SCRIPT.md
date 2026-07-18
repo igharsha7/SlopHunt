@@ -10,7 +10,7 @@ Every launch page tells you your project is brilliant. None of them have read yo
 
 # Frame 2 — Problem
 
-Product Hunt is a hype machine. Congratulations, rocket emoji. Nobody mentions the demo link died fourteen months ago.
+Product Hunt is a hype machine. Everything ships to applause. Nobody mentions the demo link died fourteen months ago.
 
 # Frame 3 — How it works
 
