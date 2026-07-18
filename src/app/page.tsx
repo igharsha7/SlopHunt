@@ -32,7 +32,7 @@ const CRIME_TICKER_2 = [
   "THE DISAPPOINTMENT TAKES TIME",
   "NOBODY ASKED FOR THIS",
   "GET ROASTED. GET RANKED",
-  "DEEPAK HAS SEEN WORSE. BARELY",
+  "WE HAVE SEEN WORSE. BARELY",
 ];
 
 export default async function HomePage() {
@@ -192,7 +192,7 @@ export default async function HomePage() {
               {
                 n: "04",
                 t: "Roast",
-                d: "Deepak reads your crimes back to you. Instant page now, video when it renders.",
+                d: "The engine reads your crimes back to you. Instant page now, video when it renders.",
               },
             ].map((step, i) => (
               <li

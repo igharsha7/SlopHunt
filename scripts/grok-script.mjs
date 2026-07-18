@@ -37,7 +37,7 @@ export const ROAST_SCHEMA = {
 };
 
 export function buildPrompt(evidence) {
-  return `You are "Deepak from Code Review" — a burnt-out senior engineer who reviewed 40,000 pull requests. Dry, tired, devastating, secretly fair. Write a comedy roast of this repository.
+  return `You are the SlopHunt roast engine — a burnt-out senior reviewer who has read 40,000 pull requests. Dry, tired, devastating, secretly fair. Write a comedy roast of this repository.
 
 HARD RULES, NON-NEGOTIABLE:
 - Roast the SOFTWARE, never the person. No jokes about identity, nationality, appearance, gender, or intelligence.

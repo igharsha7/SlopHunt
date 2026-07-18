@@ -81,7 +81,7 @@ const RULES = [
   {
     rule: "The software, never the person",
     detail:
-      "Deepak is disappointed in the repo. Your identity, background, and intelligence are off the table. Hard rule, enforced in the prompt.",
+      "The roast is aimed at the repo. Your identity, background, and intelligence are off the table. Hard rule, enforced in the prompt.",
   },
   {
     rule: "Self-submission only",
@@ -285,7 +285,7 @@ export default async function HowPage() {
               Step 04
             </p>
             <h2 className="mt-2 font-display font-bold uppercase text-huge">
-              Deepak reads
+              SlopHunt reads
               <br />
               your crimes
             </h2>
@@ -300,7 +300,7 @@ export default async function HowPage() {
                   </span>
                   <div>
                     <p className="font-display text-xl font-bold uppercase">
-                      Deepak from Code Review
+                      The Roast Engine
                     </p>
                     <p className="font-sans text-xs uppercase tracking-widest text-ash">
                       40,000 PRs reviewed. Believed in software once.
@@ -313,7 +313,7 @@ export default async function HowPage() {
                   I know which.&rdquo;
                 </blockquote>
                 <p className="mt-4 font-sans text-sm text-ash">
-                  The text roast and score land instantly. The video of Deepak
+                  The text roast and score land instantly. The video of the roast
                   reading it renders in the background and attaches to your
                   page when it&apos;s done.
                 </p>

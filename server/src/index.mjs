@@ -11,6 +11,7 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
 import { crawlRepo, fetchRepoMeta, findReceipts } from "./github.js";
+import { groupIntoSentences } from "../../video/generate-composition.mjs";
 import { computeScore } from "./score.js";
 import { writeRoast } from "./roast.js";
 
@@ -59,17 +60,29 @@ async function renderVideo(slug, payload) {
   try {
     const scratch = await mkdtemp(join(tmpdir(), "slophunt-"));
 
-    // 1. Voiceover (Kokoro, local, 1.3x)
+    // 1. Voiceover — synthesised sentence by sentence so each caption card can
+    //    be pinned to the MEASURED audio of the line being spoken. Timing the
+    //    cards by word count instead is what made them drift out of sync.
     let audio = null;
-    if (payload.videoScript && process.env.SKIP_TTS !== "true") {
+    const spokenLines =
+      payload.captionLines?.length > 0
+        ? groupIntoSentences(payload.captionLines)
+        : payload.videoScript
+          ? [payload.videoScript]
+          : [];
+
+    if (spokenLines.length > 0 && process.env.SKIP_TTS !== "true") {
       const wav = join(scratch, "vo.wav");
+      const linesPath = join(scratch, "lines.json");
+      await writeFile(linesPath, JSON.stringify({ lines: spokenLines }));
+
       const { stdout } = await execFileAsync(
         "node",
-        [join(ROOT, "scripts", "kokoro-tts.mjs"), "--text", payload.videoScript, wav],
-        { timeout: 10 * 60_000, maxBuffer: 8 * 1024 * 1024 },
+        [join(ROOT, "scripts", "kokoro-timed.mjs"), linesPath, wav],
+        { timeout: 12 * 60_000, maxBuffer: 8 * 1024 * 1024 },
       );
       const meta = JSON.parse(stdout.trim().split("\n").pop());
-      audio = { path: wav, duration: meta.durationSec };
+      audio = { path: wav, duration: meta.durationSec, beats: meta.beats };
     }
 
     // 2. Composition

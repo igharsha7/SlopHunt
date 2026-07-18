@@ -17,7 +17,7 @@ const COPY: Record<VideoState, { title: string; sub: string }> = {
   // there's no real HeyGen render to embed. Show a poster, not a blank box.
   ready: {
     title: "Roast on file",
-    sub: "Deepak recorded this one. Live video lands here when the pipeline is wired.",
+    sub: "Recorded. Live video lands here when the pipeline is wired.",
   },
 };
 
@@ -76,7 +76,7 @@ export function VideoSlot({
       </p>
       <p className="text-xs leading-relaxed text-ash">{copy.sub}</p>
       <span className="mt-2 tabular text-[10px] uppercase tracking-widest text-ash-dim">
-        9:16 · under 45s · host: Deepak
+        9:16 · under 45s · vertical · sound on
       </span>
     </div>
   );

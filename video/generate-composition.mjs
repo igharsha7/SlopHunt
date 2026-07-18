@@ -38,6 +38,29 @@ const PALETTE = {
   candy: "#fa9dcd",
 };
 
+/**
+ * Visual gags — one per caption card, cycling so no two neighbours repeat.
+ * Inline SVG in the site's sticker vocabulary (never emoji: font-dependent and
+ * uncontrollable). Each takes the card theme so the accent stays coherent.
+ */
+const GAGS = [
+  // Starburst — "look at this"
+  (t) =>
+    `<svg viewBox="0 0 100 100" width="130" height="130" fill="none"><path d="M50 4l7 18 14-13-2 19 19-6-10 17 20 2-16 11 16 11-20 2 10 17-19-6 2 19-14-13-7 18-7-18-14 13 2-19-19 6 10-17-20-2 16-11-16-11 20-2-10-17 19 6-2-19 14 13z" stroke="${t.accent}" stroke-width="4" stroke-linejoin="round"/></svg>`,
+  // Cartoon eyes — the site's signature
+  (t) =>
+    `<svg viewBox="0 0 200 100" width="190" height="95"><rect x="4" y="14" width="192" height="72" rx="36" fill="${t.accent}" stroke="${t.fg}" stroke-width="5"/><circle cx="68" cy="50" r="24" fill="#fff" stroke="${t.fg}" stroke-width="4"/><circle cx="132" cy="50" r="24" fill="#fff" stroke="${t.fg}" stroke-width="4"/><circle cx="76" cy="54" r="11" fill="${t.fg}"/><circle cx="140" cy="54" r="11" fill="${t.fg}"/></svg>`,
+  // Skull — the reaction currency
+  (t) =>
+    `<svg viewBox="0 0 24 24" width="120" height="120" fill="none" stroke="${t.accent}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 0-9 9c0 2.8 1.3 4.6 3 5.7V20a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3.3c1.7-1.1 3-2.9 3-5.7a9 9 0 0 0-9-9Z"/><circle cx="9" cy="11" r="1.7" fill="${t.accent}" stroke="none"/><circle cx="15" cy="11" r="1.7" fill="${t.accent}" stroke="none"/><path d="M10 21v-2M14 21v-2M12 15v2"/></svg>`,
+  // Blob flower — pure punctuation
+  (t) =>
+    `<svg viewBox="0 0 100 100" width="120" height="120"><path d="M50 6c8 0 13 7 13 14 6-4 15-3 19 3 5 6 3 14-2 19 7 2 12 8 12 15s-5 13-12 15c5 5 7 13 2 19-4 6-13 7-19 3 0 7-5 14-13 14s-13-7-13-14c-6 4-15 3-19-3-5-6-3-14 2-19-7-2-12-8-12-15s5-13 12-15c-5-5-7-13-2-19 4-6 13-7 19-3 0-7 5-14 13-14z" fill="${t.accent}"/></svg>`,
+  // Downward arrow — the verdict dropping
+  (t) =>
+    `<svg viewBox="0 0 100 100" width="120" height="120" fill="none" stroke="${t.accent}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><path d="M50 12v62M26 52l24 24 24-24"/></svg>`,
+];
+
 /** Backgrounds cycle so every cut changes colour — the "viral" rhythm. */
 const CAPTION_BGS = [
   { bg: PALETTE.paper, fg: PALETTE.ink, accent: PALETTE.pop },
@@ -158,14 +181,29 @@ export function groupIntoSentences(lines) {
 }
 
 /**
- * Lays out caption beats end to end. When `audioDuration` is known the beats
- * are scaled to fill exactly that long, so captions never drift from the voice.
+ * Lays out caption beats.
+ *
+ * `measured` — per-sentence timings from scripts/kokoro-timed.mjs — is the
+ * accurate path: each card is pinned to the exact audio of the sentence being
+ * spoken, so the words on screen cannot drift from the voice.
+ *
+ * The word-count estimate below is only a fallback for when there is no
+ * voiceover at all. It is a guess, and a bad one: Kokoro does not speak every
+ * word at the same rate ("already a cover band" is 4 words / 2.20s, "slop
+ * score: thirty-two" is 3 words / 2.42s), which is what made captions drift.
  */
-export function layoutCaptions(lines, startAt, audioDuration) {
+export function layoutCaptions(lines, startAt, audioDuration, measured) {
+  if (Array.isArray(measured) && measured.length > 0) {
+    return measured.map((b, i) => ({
+      line: b.text,
+      start: round(startAt + b.start),
+      duration: b.duration,
+      index: i,
+    }));
+  }
+
   const raw = lines.map(beatDuration);
   const rawTotal = raw.reduce((a, b) => a + b, 0);
-
-  // Voice occupies everything from the hook to the score reveal.
   const scale = audioDuration && rawTotal > 0 ? audioDuration / rawTotal : 1;
 
   let cursor = startAt;
@@ -185,7 +223,9 @@ export function buildComposition(payload) {
     oneLiner = "",
     crimes = [],
     captionLines = [],
-    audio = null, // { file, duration } — voiceover WAV/MP3 beside index.html
+    // { file, duration, beats? } — voiceover beside index.html. `beats` carries
+    // measured per-sentence timings and is what keeps captions locked to speech.
+    audio = null,
   } = payload;
 
   // Caption-driven when we have a script; otherwise fall back to crime cards.
@@ -199,7 +239,7 @@ export function buildComposition(payload) {
   // The voice covers hook + captions; the score/outro land after it.
   const captionsStart = T.hook;
   const voiceBudget = audio?.duration ? Math.max(0, audio.duration - T.hook) : null;
-  const beats = layoutCaptions(beatsSource, captionsStart, voiceBudget);
+  const beats = layoutCaptions(beatsSource, captionsStart, voiceBudget, audio?.beats);
 
   const lastBeat = beats[beats.length - 1];
   const scoreStart = lastBeat ? round(lastBeat.start + lastBeat.duration + 0.15) : T.hook;
@@ -219,8 +259,10 @@ export function buildComposition(payload) {
       // Longer sentences step the type down rather than overflow the frame.
       const words = String(line).trim().split(/\s+/).length;
       const size = words > 12 ? 68 : words > 8 ? 84 : 104;
+      const gag = GAGS[index % GAGS.length];
       return `      <div class="clip beat" id="beat-${index}" data-start="${start}" data-duration="${duration}" data-track-index="1" style="background:${theme.bg};color:${theme.fg}">
         <div class="inner">
+          <div class="beat-gag" style="color:${theme.accent}">${gag(theme)}</div>
           <div class="beat-tick" style="background:${theme.accent}"></div>
           <div class="beat-text" style="font-size:${size}px">${esc(line)}</div>
         </div>
@@ -231,7 +273,8 @@ export function buildComposition(payload) {
   // Fast in, no exit fade: hard cuts read as energy and avoid stale-state risk.
   const captionTweens = beats
     .map(({ start, index }) => {
-      return `  tl.fromTo("#beat-${index} .beat-text", { opacity: 0, y: 26, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.22, ease: "power4.out" }, ${start})
+      return `  tl.fromTo("#beat-${index} .beat-gag", { opacity: 0, scale: 0.5, rotate: -12 }, { opacity: 1, scale: 1, rotate: 0, duration: 0.34, ease: "back.out(2.4)" }, ${start})
+     .fromTo("#beat-${index} .beat-text", { opacity: 0, y: 26, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.22, ease: "power4.out" }, ${round(start + 0.08)})
      .fromTo("#beat-${index} .beat-tick", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.out" }, ${start});`;
     })
     .join("\n");
@@ -287,6 +330,7 @@ export function buildComposition(payload) {
 
       /* ------------------------------------------------------- captions */
       .beat { justify-content: center; padding: 0 80px; }
+      .beat-gag { margin-bottom: 34px; transform-origin: left center; }
       .beat-tick { height: 14px; width: 220px; transform-origin: left center; margin-bottom: 46px; }
       .beat-text {
         font-family: "Oswald", sans-serif; font-weight: 700; text-transform: uppercase;

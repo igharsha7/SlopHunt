@@ -5,7 +5,7 @@ export const FAQS = [
   },
   {
     q: "Is the roast about me?",
-    a: "Never. Deepak roasts the software — the commit messages, the dead demo link, the fourteen months of silence. There are no jokes about you, your identity, or your intelligence. The repo is the only target.",
+    a: "Never. SlopHunt roasts the software — the commit messages, the dead demo link, the fourteen months of silence. There are no jokes about you, your identity, or your intelligence. The repo is the only target.",
   },
   {
     q: "How is the Slop Score calculated?",

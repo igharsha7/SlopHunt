@@ -171,7 +171,7 @@ export default async function ProductPage({
               The Roast
             </h2>
             <p className="mt-1 text-xs uppercase tracking-widest text-ash-dim">
-              As read by Deepak, who reviewed 40,000 PRs and believed in software
+              Read back by the roast engine, which has seen 40,000 PRs and believed in software
               once
             </p>
             <div className="mt-5 space-y-4 border-l-4 border-pop pl-5">

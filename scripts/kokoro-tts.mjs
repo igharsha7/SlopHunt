@@ -7,7 +7,7 @@
  * Runs Kokoro-82M locally through kokoro-js (transformers.js) — no API key, no
  * network after the first model download (~90 MB, cached under node_modules).
  *
- * Speed defaults to 1.3: Deepak is tired, not slow, and the fast delivery is
+ * Speed defaults to 1.3: the delivery is tired, not slow, and the pace is
  * what makes the cuts land.
  */
 import { readFile, writeFile, stat } from "node:fs/promises";

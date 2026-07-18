@@ -43,7 +43,7 @@ export default function FaqPage() {
           </h2>
           <p className="mt-2 max-w-lg font-sans text-sm leading-relaxed text-ash">
             Good instinct. The whole thing is open source — the pipeline, the
-            scoring math, the prompt that keeps Deepak polite about humans.
+            scoring math, the prompt that keeps the roast aimed at code.
             Read it before you feed it.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
