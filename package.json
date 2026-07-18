@@ -13,7 +13,9 @@
     "test:integration": "vitest run tests/integration",
     "test:watch": "vitest",
     "video:build": "node video/generate-composition.mjs",
-    "video:render": "cd video/roast-video && npx --yes hyperframes@0.7.63 render -o renders/roast.mp4 --strict"
+    "video:render": "cd video/roast-video && npx --yes hyperframes@0.7.63 render -o renders/roast.mp4 --strict",
+    "video:script": "node scripts/grok-script.mjs",
+    "video:voice": "node scripts/kokoro-tts.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -33,6 +35,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "kokoro-js": "^1.2.1",
     "postgres": "^3.4.9",
     "tailwindcss": "^4",
     "typescript": "^5",

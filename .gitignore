@@ -47,3 +47,10 @@ next-env.d.ts
 # hyperframes render artifacts
 video/roast-video/renders/
 video/roast-video/.producer/
+
+# kokoro model cache
+.cache/
+
+# generated voiceover (regenerate with npm run video:voice)
+video/roast-video/*.wav
+video/roast-video/*.mp3

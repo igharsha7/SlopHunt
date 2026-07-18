@@ -8,7 +8,24 @@ import { buildComposition } from "../../video/generate-composition.mjs";
  * the spec puts on the video: 9:16, under 45 seconds.
  */
 
+/** Caption-driven payload — what the Grok CLI tier produces. */
 const payload = {
+  owner: "igharsha7",
+  name: "SlopHunt",
+  slopScore: 32,
+  oneLiner: "A Product Hunt clone that scores others on originality.",
+  captionLines: [
+    "Three stars. Four days old.",
+    "Already a cover band.",
+    "Roast-my-repo has two thousand stars.",
+    "Nine of forty commits just say fix.",
+    "Slop Score: thirty-two.",
+  ],
+  crimes: [],
+};
+
+/** Legacy payload — no script, so the composer falls back to crime cards. */
+const crimePayload = {
   owner: "igharsha7",
   name: "SlopHunt",
   slopScore: 32,
@@ -35,7 +52,7 @@ describe("composition contract", () => {
 
   it("stays under the 45-second spec limit", () => {
     const duration = rootDuration(html);
-    expect(duration).toBeGreaterThan(20);
+    expect(duration).toBeGreaterThan(5);
     expect(duration).toBeLessThan(45);
   });
 
@@ -54,17 +71,31 @@ describe("composition contract", () => {
     }
   });
 
-  it("fades .inner wrappers, never clip elements — seek safety", () => {
-    // A `.to("#id", {opacity})` on a bare clip id is the bug the linter flags.
-    expect(html).not.toMatch(/\.to\("#(hook|crime-\d|score|outro)",\s*\{\s*opacity/);
-    expect(html).toMatch(/\.to\("#hook \.inner",\s*\{\s*opacity: 0/);
+  it("never fades a clip element — the framework owns clip visibility", () => {
+    // A `.to("#id", {opacity})` on a bare clip id leaves stale state when the
+    // renderer seeks non-linearly. The linter flags it; this keeps it gone.
+    expect(html).not.toMatch(
+      /\.to\("#(hook|beat-\d+|crime-\d+|score|outro)",\s*\{[^}]*opacity/,
+    );
   });
 
-  it("pairs every exit fade with a hard-kill set at the clip boundary", () => {
-    const fades = html.match(/\.to\("#[\w-]+ \.inner", \{ opacity: 0/g) ?? [];
-    const kills = html.match(/\.set\("#[\w-]+ \.inner", \{ opacity: 0 \}/g) ?? [];
-    expect(fades.length).toBeGreaterThan(0);
-    expect(kills.length).toBe(fades.length);
+  it("uses hard cuts — entrances only, no exit tweens to reverse", () => {
+    // Cuts read as energy AND sidestep stale-visibility entirely: with no exit
+    // fade there is nothing for a seek to land mid-way through.
+    const exitFades = html.match(/\.to\("#[\w.\- ]+", \{ opacity: 0/g) ?? [];
+    expect(exitFades).toHaveLength(0);
+
+    // Every scene still animates in.
+    expect(html).toMatch(/fromTo\("#beat-0 \.beat-text"/);
+    expect(html).toMatch(/fromTo\("#hook \.repo"/);
+  });
+
+  it("cuts fast enough to hold attention — no beat lingers past 3s", () => {
+    const durations = [...html.matchAll(/class="clip beat"[^>]*data-duration="([\d.]+)"/g)].map(
+      (m) => Number(m[1]),
+    );
+    expect(durations.length).toBeGreaterThan(0);
+    for (const d of durations) expect(d).toBeLessThanOrEqual(3);
   });
 
   it("does not link external Google Fonts", () => {
@@ -91,23 +122,54 @@ describe("composition content", () => {
     expect(html).toContain("&lt;img");
   });
 
-  it("caps crime cards at four to keep the runtime under 45s", () => {
+  it("falls back to crime cards when there is no script", () => {
+    const html = buildComposition(crimePayload);
+    expect(html).toContain("3 existing projects already do this");
+    expect(rootDuration(html)).toBeLessThan(45);
+  });
+
+  it("caps the crime-card fallback at four to hold the runtime", () => {
     const many = buildComposition({
-      ...payload,
+      ...crimePayload,
       crimes: Array.from({ length: 10 }, (_, i) => ({ evidence: `crime ${i}` })),
     });
-    expect((many.match(/class="clip crime"/g) ?? []).length).toBe(4);
+    expect((many.match(/class="clip beat"/g) ?? []).length).toBe(4);
     expect(rootDuration(many)).toBeLessThan(45);
   });
 
-  it("shortens the video when there are fewer crimes", () => {
-    const two = buildComposition({ ...payload, crimes: payload.crimes.slice(0, 2) });
+  it("shortens the video when there are fewer beats", () => {
+    const two = buildComposition({ ...payload, captionLines: payload.captionLines.slice(0, 2) });
     expect(rootDuration(two)).toBeLessThan(rootDuration(buildComposition(payload)));
   });
 
+  it("scales beats to fill the voiceover so captions track the audio", () => {
+    const withVoice = buildComposition({
+      ...payload,
+      audio: { file: "vo.wav", duration: 20 },
+    });
+    const beats = [...withVoice.matchAll(/class="clip beat"[^>]*data-duration="([\d.]+)"/g)].map(
+      (m) => Number(m[1]),
+    );
+    const spoken = beats.reduce((a, b) => a + b, 0);
+    // Beats cover the voice minus the cold open, within a frame or two.
+    expect(spoken).toBeGreaterThan(16);
+    expect(spoken).toBeLessThan(19);
+    expect(withVoice).toContain('id="voiceover"');
+  });
+
   it("accepts plain-string crimes as well as objects", () => {
-    const html = buildComposition({ ...payload, crimes: ["a plain string crime"] });
+    // crimePayload has no captionLines, so the crime-card branch is taken.
+    const html = buildComposition({ ...crimePayload, crimes: ["a plain string crime"] });
     expect(html).toContain("a plain string crime");
+  });
+
+  it("prefers the script over crime cards when both are present", () => {
+    const html = buildComposition({
+      ...payload,
+      crimes: [{ evidence: "SHOULD NOT APPEAR" }],
+    });
+    expect(html).toContain("Already a cover band.");
+    expect(html).not.toContain("SHOULD NOT APPEAR");
   });
 
   it("is deterministic — identical payload, identical bytes", () => {

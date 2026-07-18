@@ -3,6 +3,7 @@ import "server-only";
 import type { Receipt } from "@/lib/slop";
 import type { CrawlResult } from "./github";
 import { writeRoastWithGrok } from "./grok";
+import { writeRoastWithGrokCli } from "./grok-cli";
 import {
   ROAST_SYSTEM_PROMPT,
   buildEvidence,
@@ -28,6 +29,11 @@ export interface RoastResult {
   oneLiner: string;
   tagline: string;
   model: string;
+  /**
+   * The script split into 4-7 word beats. Present only from the Grok CLI tier;
+   * the video composer falls back to crime cards when it's absent.
+   */
+  captionLines?: string[];
 }
 
 const CLAUDE_MODEL = "claude-sonnet-5";
@@ -155,6 +161,11 @@ export async function writeRoast(
   score: ScoreResult,
   receipts: Receipt[],
 ): Promise<RoastResult> {
+  // Grok CLI first: it needs no API key (it carries the operator's session)
+  // and it's the only tier that returns caption beats for the video.
+  const cli = await writeRoastWithGrokCli(crawl, score, receipts);
+  if (cli) return cli;
+
   const grok = await writeRoastWithGrok(crawl, score, receipts);
   if (grok) return grok;
 

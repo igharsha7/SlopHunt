@@ -8,6 +8,13 @@ export default defineConfig({
     // Integration tests hit the live GitHub API and the running dev server;
     // 30s keeps a slow network from failing a correct test.
     testTimeout: 30_000,
+    env: {
+      // The Grok CLI tier shells out to a real binary that exists on dev
+      // machines. Without this, unit tests spend 20s+ each invoking the actual
+      // model and assert against non-deterministic output. Integration tests
+      // that want the real thing unset it explicitly.
+      GROK_CLI_DISABLED: "true",
+    },
   },
   resolve: {
     alias: {

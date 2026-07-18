@@ -4,27 +4,29 @@
  *
  *   node video/generate-composition.mjs <payload.json> [outDir]
  *
- * Payload shape (a subset of SlopEntry — see src/lib/slop.ts):
- *   { owner, name, slopScore, oneLiner, videoScript, crimes: [{evidence}], verdict }
+ * Payload (superset of what Grok returns — see scripts/grok-script.mjs):
+ *   { owner, name, slopScore, oneLiner, captionLines[], crimes[], audio? }
  *
- * The composition is deterministic: same payload in, byte-identical HTML out,
- * so a re-render never produces a different video.
+ * When `captionLines` is present the video is caption-driven: every beat gets
+ * its own hard cut, timed against the voiceover so the words on screen match
+ * the words being spoken. Falls back to crime cards when there is no script.
+ *
+ * Deterministic: same payload in, byte-identical HTML out.
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from "node:fs";
+import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
 /* ---------------------------------------------------------------- timing */
 const T = {
-  hookIn: 0.0,
-  hookOut: 5.0,
-  crimeStart: 5.0,
-  crimeEach: 5.5, // per crime card
-  scoreLead: 1.2, // gap before the score slams in
-  scoreHold: 7.5,
-  outro: 5.0,
+  hook: 2.6, // cold open — short, the voice starts immediately
+  captionMin: 0.85, // floor so a 3-word beat still reads
+  captionPerWord: 0.34, // ≈1.3x delivery
+  captionGap: 0.06, // hard cut, not a dissolve
+  scoreHold: 4.6,
+  outro: 3.2,
 };
 
 const PALETTE = {
@@ -36,10 +38,18 @@ const PALETTE = {
   candy: "#fa9dcd",
 };
 
+/** Backgrounds cycle so every cut changes colour — the "viral" rhythm. */
+const CAPTION_BGS = [
+  { bg: PALETTE.paper, fg: PALETTE.ink, accent: PALETTE.pop },
+  { bg: PALETTE.grape, fg: PALETTE.paper, accent: PALETTE.sun },
+  { bg: PALETTE.sun, fg: PALETTE.ink, accent: PALETTE.grape },
+  { bg: PALETTE.candy, fg: PALETTE.ink, accent: PALETTE.grape },
+];
+
 /**
  * Score ramp for the number, which sits on the deep purple card. The site's
- * light-background ramp (dark amber, forest green) drops to ~1.7:1 here, so
- * this is a separate set of bright-on-dark tints — same meaning, readable.
+ * light-background ramp drops to ~1.7:1 here, so this is a separate set of
+ * bright-on-dark tints — same meaning, readable.
  */
 function scoreColorOnGrape(score) {
   if (score >= 90) return "#ff7a45";
@@ -68,6 +78,32 @@ const esc = (s) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
+/** Beat duration from word count, floored so short beats stay readable. */
+export function beatDuration(line) {
+  const words = String(line).trim().split(/\s+/).filter(Boolean).length;
+  return round(Math.max(T.captionMin, words * T.captionPerWord));
+}
+
+/**
+ * Lays out caption beats end to end. When `audioDuration` is known the beats
+ * are scaled to fill exactly that long, so captions never drift from the voice.
+ */
+export function layoutCaptions(lines, startAt, audioDuration) {
+  const raw = lines.map(beatDuration);
+  const rawTotal = raw.reduce((a, b) => a + b, 0);
+
+  // Voice occupies everything from the hook to the score reveal.
+  const scale = audioDuration && rawTotal > 0 ? audioDuration / rawTotal : 1;
+
+  let cursor = startAt;
+  return lines.map((line, i) => {
+    const duration = round(raw[i] * scale);
+    const beat = { line, start: round(cursor), duration, index: i };
+    cursor = round(cursor + duration + T.captionGap);
+    return beat;
+  });
+}
+
 export function buildComposition(payload) {
   const {
     owner = "someone",
@@ -75,17 +111,25 @@ export function buildComposition(payload) {
     slopScore = 0,
     oneLiner = "",
     crimes = [],
+    captionLines = [],
+    audio = null, // { file, duration } — voiceover WAV/MP3 beside index.html
   } = payload;
 
-  // Four crimes is the sweet spot for <45s; more and each card gets unreadable.
-  const cards = crimes.slice(0, 4).map((c) =>
-    typeof c === "string" ? c : c.evidence,
-  );
+  // Caption-driven when we have a script; otherwise fall back to crime cards.
+  const beatsSource =
+    captionLines.length > 0
+      ? captionLines
+      : crimes.slice(0, 4).map((c) => (typeof c === "string" ? c : c.evidence));
 
-  const crimesDuration = cards.length * T.crimeEach;
-  const scoreStart = T.crimeStart + crimesDuration + T.scoreLead;
-  const outroStart = scoreStart + T.scoreHold;
-  const total = Math.round((outroStart + T.outro) * 10) / 10;
+  // The voice covers hook + captions; the score/outro land after it.
+  const captionsStart = T.hook;
+  const voiceBudget = audio?.duration ? Math.max(0, audio.duration - T.hook) : null;
+  const beats = layoutCaptions(beatsSource, captionsStart, voiceBudget);
+
+  const lastBeat = beats[beats.length - 1];
+  const scoreStart = lastBeat ? round(lastBeat.start + lastBeat.duration + 0.15) : T.hook;
+  const outroStart = round(scoreStart + T.scoreHold);
+  const total = round(outroStart + T.outro);
 
   const accent = scoreColorOnGrape(slopScore);
   const verdict = verdictFor(slopScore);
@@ -94,29 +138,37 @@ export function buildComposition(payload) {
   // hard kills target the wrapper, never the clip — the framework owns clip
   // visibility, and fading a clip leaves stale state when the renderer seeks
   // non-linearly into a later frame.
-  const crimeClips = cards
-    .map((text, i) => {
-      const start = T.crimeStart + i * T.crimeEach;
-      return `      <div class="clip crime" id="crime-${i}" data-start="${start}" data-duration="${T.crimeEach}" data-track-index="1">
+  const captionClips = beats
+    .map(({ line, start, duration, index }) => {
+      const theme = CAPTION_BGS[index % CAPTION_BGS.length];
+      return `      <div class="clip beat" id="beat-${index}" data-start="${start}" data-duration="${duration}" data-track-index="1" style="background:${theme.bg};color:${theme.fg}">
         <div class="inner">
-          <div class="crime-index">EXHIBIT ${String(i + 1).padStart(2, "0")}</div>
-          <div class="crime-text">${esc(text)}</div>
+          <div class="beat-tick" style="background:${theme.accent}"></div>
+          <div class="beat-text">${esc(line)}</div>
         </div>
       </div>`;
     })
     .join("\n");
 
-  const crimeTweens = cards
-    .map((_, i) => {
-      const start = T.crimeStart + i * T.crimeEach;
-      const exitAt = round(start + T.crimeEach - 0.4);
-      const boundary = round(start + T.crimeEach);
-      return `  tl.from("#crime-${i} .crime-index", { opacity: 0, x: -40, duration: 0.4, ease: "power3.out" }, ${start})
-     .from("#crime-${i} .crime-text", { opacity: 0, y: 42, duration: 0.55, ease: "power3.out" }, ${round(start + 0.15)})
-     .to("#crime-${i} .inner", { opacity: 0, duration: 0.35, ease: "power2.in" }, ${exitAt})
-     .set("#crime-${i} .inner", { opacity: 0 }, ${boundary});`;
+  // Fast in, no exit fade: hard cuts read as energy and avoid stale-state risk.
+  const captionTweens = beats
+    .map(({ start, index }) => {
+      return `  tl.fromTo("#beat-${index} .beat-text", { opacity: 0, y: 26, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.22, ease: "power4.out" }, ${start})
+     .fromTo("#beat-${index} .beat-tick", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power3.out" }, ${start});`;
     })
     .join("\n");
+
+  // The renderer discovers media by id — an <audio> without one renders SILENT.
+  const audioTrack = audio?.file
+    ? `      <audio
+        id="voiceover"
+        class="clip"
+        src="${esc(audio.file)}"
+        data-start="0"
+        data-duration="${round(audio.duration ?? total)}"
+        data-track-index="0"
+      ></audio>\n`
+    : "";
 
   return `<!doctype html>
 <html lang="en">
@@ -135,65 +187,64 @@ export function buildComposition(payload) {
         font-family: "Inter", sans-serif;
         color: ${PALETTE.ink};
       }
-      /* byooooob graph paper */
       #root::before {
-        content: ""; position: absolute; inset: 0; pointer-events: none;
+        content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 5;
         background-image:
-          linear-gradient(to right, rgba(0,0,0,.05) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(0,0,0,.05) 1px, transparent 1px);
+          linear-gradient(to right, rgba(0,0,0,.045) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0,0,0,.045) 1px, transparent 1px);
         background-size: 120px 120px;
       }
       .display { font-family: "Oswald", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: -.02em; }
       .clip { position: absolute; inset: 0; display: flex; flex-direction: column; }
+      .inner { display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: center; }
 
       /* ---------------------------------------------------------- hook */
-      #hook { justify-content: center; padding: 0 90px; }
+      #hook { justify-content: center; padding: 0 80px; background: ${PALETTE.ink}; color: ${PALETTE.paper}; }
       #hook .eyebrow {
-        font-size: 34px; font-weight: 700; text-transform: uppercase; letter-spacing: .18em;
-        color: ${PALETTE.ink}; background: ${PALETTE.sun};
-        align-self: flex-start; padding: 14px 26px; border: 3px solid ${PALETTE.ink};
-        border-radius: 999px; box-shadow: 6px 7px 0 0 ${PALETTE.ink};
+        font-family: "Oswald", sans-serif; font-size: 36px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: .22em; color: ${PALETTE.sun};
       }
-      #hook .repo { font-size: 128px; line-height: .95; margin-top: 54px; }
-      #hook .owner { font-size: 44px; color: #444; margin-top: 26px; font-weight: 700; }
-      #hook .rule { height: 8px; background: ${PALETTE.ink}; margin-top: 60px; transform-origin: left center; }
+      #hook .repo { font-size: 132px; line-height: .92; margin-top: 30px; color: ${PALETTE.paper}; }
+      #hook .owner { font-size: 42px; color: ${PALETTE.candy}; margin-top: 22px; font-weight: 700; }
 
-      /* -------------------------------------------------------- crimes */
-      .crime { justify-content: center; padding: 0 90px; }
-      .crime-index {
-        font-family: "Oswald", sans-serif; font-weight: 700; font-size: 40px;
-        letter-spacing: .2em; color: #c9380f; margin-bottom: 40px;
+      /* ------------------------------------------------------- captions */
+      .beat { justify-content: center; padding: 0 80px; }
+      .beat-tick { height: 14px; width: 220px; transform-origin: left center; margin-bottom: 46px; }
+      .beat-text {
+        font-family: "Oswald", sans-serif; font-weight: 700; text-transform: uppercase;
+        font-size: 104px; line-height: 1.04; letter-spacing: -.02em;
       }
-      .crime-text { font-size: 82px; font-weight: 700; line-height: 1.12; }
 
       /* --------------------------------------------------------- score */
       #score { justify-content: center; align-items: center; background: ${PALETTE.grape}; color: ${PALETTE.paper}; }
+      #score .inner { align-items: center; }
       #score .label {
-        font-family: "Oswald", sans-serif; font-size: 40px; letter-spacing: .28em;
+        font-family: "Oswald", sans-serif; font-size: 42px; letter-spacing: .28em;
         text-transform: uppercase; color: ${PALETTE.sun};
       }
       #score .number {
-        font-family: "Oswald", sans-serif; font-weight: 700; font-size: 460px; line-height: .82;
-        color: ${accent}; margin: 20px 0;
+        font-family: "Oswald", sans-serif; font-weight: 700; font-size: 470px; line-height: .82;
+        color: ${accent}; margin: 14px 0;
       }
       #score .verdict {
-        font-family: "Oswald", sans-serif; font-weight: 700; font-size: 68px; text-transform: uppercase;
-        border: 5px solid ${PALETTE.sun}; border-radius: 999px; padding: 16px 44px; color: ${PALETTE.sun};
+        font-family: "Oswald", sans-serif; font-weight: 700; font-size: 70px; text-transform: uppercase;
+        border: 5px solid ${PALETTE.sun}; border-radius: 999px; padding: 16px 46px; color: ${PALETTE.sun};
       }
       #score .oneliner {
-        font-size: 46px; font-weight: 700; line-height: 1.3; text-align: center;
-        margin-top: 62px; padding: 0 90px; max-width: 980px;
+        font-size: 46px; font-weight: 700; line-height: 1.28; text-align: center;
+        margin-top: 54px; padding: 0 80px;
       }
 
       /* --------------------------------------------------------- outro */
       #outro { justify-content: center; align-items: center; background: ${PALETTE.sun}; }
-      #outro .wordmark { font-size: 150px; line-height: .9; }
-      #outro .wordmark span { color: ; }
-      #outro .tag { font-size: 44px; font-weight: 700; margin-top: 36px; text-align: center; }
+      #outro .inner { align-items: center; }
+      #outro .wordmark { font-size: 158px; line-height: .9; }
+      #outro .wordmark span { color: ${PALETTE.grape}; }
+      #outro .tag { font-size: 46px; font-weight: 700; margin-top: 30px; text-align: center; }
       #outro .chip {
-        margin-top: 54px; font-family: "Oswald", sans-serif; font-size: 38px; letter-spacing: .16em;
+        margin-top: 46px; font-family: "Oswald", sans-serif; font-size: 40px; letter-spacing: .16em;
         text-transform: uppercase; background: ${PALETTE.ink}; color: ${PALETTE.sun};
-        padding: 20px 44px; border-radius: 999px;
+        padding: 20px 46px; border-radius: 999px;
       }
     </style>
   </head>
@@ -206,28 +257,31 @@ export function buildComposition(payload) {
       data-width="1080"
       data-height="1920"
     >
-      <div class="clip" id="hook" data-start="${T.hookIn}" data-duration="${T.hookOut}" data-track-index="1">
+${audioTrack}      <div class="clip" id="hook" data-start="0" data-duration="${T.hook}" data-track-index="1">
         <div class="inner">
           <div class="eyebrow">Slop report</div>
           <div class="repo display">${esc(name)}</div>
           <div class="owner">@${esc(owner)}</div>
-          <div class="rule"></div>
         </div>
       </div>
 
-${crimeClips}
+${captionClips}
 
       <div class="clip" id="score" data-start="${scoreStart}" data-duration="${T.scoreHold}" data-track-index="1">
-        <div class="label">Slop Score</div>
-        <div class="number" id="score-number">0</div>
-        <div class="verdict">${esc(verdict)}</div>
-        <div class="oneliner">&ldquo;${esc(oneLiner)}&rdquo;</div>
+        <div class="inner">
+          <div class="label">Slop Score</div>
+          <div class="number" id="score-number">0</div>
+          <div class="verdict">${esc(verdict)}</div>
+          <div class="oneliner">&ldquo;${esc(oneLiner)}&rdquo;</div>
+        </div>
       </div>
 
       <div class="clip" id="outro" data-start="${outroStart}" data-duration="${T.outro}" data-track-index="1">
-        <div class="wordmark display">Slop<span>Hunt</span></div>
-        <div class="tag">Submit your repo. Get roasted. Get ranked.</div>
-        <div class="chip">slophunt</div>
+        <div class="inner">
+          <div class="wordmark display">Slop<span>Hunt</span></div>
+          <div class="tag">Submit your repo. Get roasted. Get ranked.</div>
+          <div class="chip">slophunt</div>
+        </div>
       </div>
     </div>
 
@@ -235,46 +289,42 @@ ${crimeClips}
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
 
-      // Hook — exit + hard kill ride on .inner so a seek past the boundary
-      // can't leave a half-faded scene behind.
-      tl.from("#hook .eyebrow", { opacity: 0, y: -30, duration: 0.45, ease: "power3.out" }, 0.1)
-        .from("#hook .repo", { opacity: 0, y: 70, duration: 0.7, ease: "power3.out" }, 0.35)
-        .from("#hook .owner", { opacity: 0, y: 24, duration: 0.5, ease: "power3.out" }, 0.7)
-        .fromTo("#hook .rule", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 0.9)
-        .to("#hook .inner", { opacity: 0, duration: 0.4, ease: "power2.in" }, ${round(T.hookOut - 0.45)})
-        .set("#hook .inner", { opacity: 0 }, ${T.hookOut});
+      // Hook — snappy, no exit fade (hard cut into the first caption).
+      tl.fromTo("#hook .eyebrow", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.25, ease: "power3.out" }, 0.05)
+        .fromTo("#hook .repo", { opacity: 0, y: 46, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: "power4.out" }, 0.15)
+        .fromTo("#hook .owner", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.28, ease: "power3.out" }, 0.4);
 
-      // Crimes
-${crimeTweens}
+      // Captions — one hard cut per spoken beat.
+${captionTweens}
 
-      // Score reveal — the counter is the payoff, so it gets the longest ease.
+      // Score reveal — the payoff, counted up fast.
       const counter = { v: 0 };
-      tl.from("#score .label", { opacity: 0, duration: 0.4 }, ${scoreStart + 0.1})
+      tl.fromTo("#score .label", { opacity: 0 }, { opacity: 1, duration: 0.25 }, ${round(scoreStart + 0.05)})
         .fromTo(
           "#score .number",
-          { scale: 0.65, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.7, ease: "back.out(1.7)" },
-          ${scoreStart + 0.3}
+          { scale: 0.6, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" },
+          ${round(scoreStart + 0.15)}
         )
         .to(
           counter,
           {
             v: ${slopScore},
-            duration: 1.9,
+            duration: 1.1,
             ease: "power3.out",
             onUpdate: () => {
               document.getElementById("score-number").textContent = Math.round(counter.v);
             },
           },
-          ${scoreStart + 0.35}
+          ${round(scoreStart + 0.2)}
         )
-        .from("#score .verdict", { opacity: 0, y: 28, duration: 0.5, ease: "power3.out" }, ${scoreStart + 2.2})
-        .from("#score .oneliner", { opacity: 0, y: 30, duration: 0.6, ease: "power3.out" }, ${scoreStart + 2.6});
+        .fromTo("#score .verdict", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.32, ease: "power3.out" }, ${round(scoreStart + 1.3)})
+        .fromTo("#score .oneliner", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.36, ease: "power3.out" }, ${round(scoreStart + 1.6)});
 
       // Outro
-      tl.from("#outro .wordmark", { opacity: 0, scale: 0.85, duration: 0.6, ease: "back.out(1.6)" }, ${outroStart + 0.15})
-        .from("#outro .tag", { opacity: 0, y: 24, duration: 0.5, ease: "power3.out" }, ${outroStart + 0.5})
-        .from("#outro .chip", { opacity: 0, y: 20, duration: 0.45, ease: "power3.out" }, ${outroStart + 0.8});
+      tl.fromTo("#outro .wordmark", { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(1.8)" }, ${round(outroStart + 0.08)})
+        .fromTo("#outro .tag", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, ${round(outroStart + 0.32)})
+        .fromTo("#outro .chip", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.28, ease: "power3.out" }, ${round(outroStart + 0.55)});
 
       window.__timelines["main"] = tl;
     </script>
@@ -294,6 +344,15 @@ if (isMain) {
   }
   const payload = JSON.parse(readFileSync(payloadPath, "utf8"));
   mkdirSync(outDir, { recursive: true });
+
+  // Copy the voiceover next to index.html so the composition can reference it
+  // by bare filename (the renderer resolves relative to the project dir).
+  if (payload.audio?.path && existsSync(payload.audio.path)) {
+    const file = basename(payload.audio.path);
+    copyFileSync(payload.audio.path, join(outDir, file));
+    payload.audio = { file, duration: payload.audio.duration };
+  }
+
   const html = buildComposition(payload);
   writeFileSync(join(outDir, "index.html"), html);
   console.log(`wrote ${join(outDir, "index.html")} (${html.length} bytes)`);
