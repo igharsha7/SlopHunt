@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Reveal, RevealGroup } from "@/components/gsap/reveal";
+import { SkullIcon } from "@/components/icons";
 import { FilterTabs } from "@/components/leaderboard/filter-tabs";
+import { Starburst, StickerLabel } from "@/components/site/stickers";
 import { SlopRow } from "@/components/slop/slop-row";
 import { getAllTags, getLeaderboard, type LeaderboardRange } from "@/lib/queries";
-import { AWARDS, computeAwards } from "@/lib/slop";
+import { AWARDS, computeAwards, scoreVerdict, type SlopEntry } from "@/lib/slop";
 
 export const metadata: Metadata = {
   title: "Leaderboard",
@@ -14,6 +16,56 @@ export const metadata: Metadata = {
 
 function parseRange(value: string | undefined): LeaderboardRange {
   return value === "today" || value === "week" ? value : "all";
+}
+
+/** Podium card — the top three get byooooob trading-card treatment. */
+function PodiumCard({
+  entry,
+  place,
+  award,
+}: {
+  entry: SlopEntry;
+  place: 1 | 2 | 3;
+  award?: string;
+}) {
+  const look =
+    place === 1
+      ? "bg-sun md:order-2 md:-mt-6"
+      : place === 2
+        ? "bg-candy tilt-l md:order-1"
+        : "bg-cream tilt-r md:order-3";
+
+  return (
+    <Link
+      href={`/product/${entry.slug}`}
+      className={`press relative block rounded-[24px] border-2 border-ink p-6 text-ink shadow-brut transition-transform hover:rotate-0 ${look}`}
+    >
+      <span className="tabular absolute -left-3 -top-3 flex h-11 w-11 items-center justify-center rounded-full border-2 border-ink bg-paper font-display text-xl font-bold shadow-brut-sm">
+        {place}
+      </span>
+      {award ? (
+        <span className="absolute -right-2 -top-3 max-w-[60%] truncate rounded-full border-2 border-grape bg-paper px-2.5 py-1 font-sans text-[10px] font-bold uppercase tracking-widest text-grape shadow-brut-sm">
+          {award}
+        </span>
+      ) : null}
+      <span className="tabular mt-2 block font-display text-7xl font-bold leading-none text-pop">
+        {entry.slopScore}
+      </span>
+      <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-ash">
+        Slop Score · {scoreVerdict(entry.slopScore)}
+      </span>
+      <span className="mt-3 block truncate border-t-2 border-ink pt-3 font-display text-xl font-bold uppercase leading-tight">
+        {entry.name}
+      </span>
+      <span className="mt-1 line-clamp-2 block font-sans text-sm text-ash">
+        {entry.tagline}
+      </span>
+      <span className="tabular mt-3 inline-flex items-center gap-1.5 rounded-full border border-ink px-2.5 py-1 font-sans text-xs font-bold">
+        <SkullIcon className="h-3.5 w-3.5" />
+        {entry.skulls.toLocaleString()}
+      </span>
+    </Link>
+  );
 }
 
 export default async function LeaderboardPage({
@@ -45,120 +97,174 @@ export default async function LeaderboardPage({
   const tags = await getAllTags();
   const activeAwardLabel = AWARDS.find((a) => a.id === activeAward)?.label;
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      <Reveal as="header" y={16} className="border-b-2 border-hairline pb-8">
-        <p className="font-display text-xs font-black uppercase tracking-widest text-pop">
-          Ranked by Slop Score
-        </p>
-        <h1 className="mt-2 font-display font-black uppercase text-huge">
-          The Leaderboard
-        </h1>
-        <p className="mt-3 max-w-xl text-ash">
-          Higher is worse. Every entry self-submitted, every crime cited. Argue
-          with the numbers — that&apos;s engagement.
-        </p>
-      </Reveal>
+  const podium = entries.slice(0, 3);
+  const table = entries.slice(3);
+  const totalSkulls = entries.reduce((sum, e) => sum + e.skulls, 0);
 
-      {/* Category award badges — each links to its filtered view. */}
-      <section aria-label="Category awards" className="mt-8">
-        <div className="flex flex-wrap gap-2">
-          {AWARDS.map((award) => {
-            const selected = activeAward === award.id;
+  return (
+    <div className="bg-grid-paper">
+      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6">
+        <Starburst
+          aria-hidden
+          className="pointer-events-none absolute right-[2%] top-8 hidden h-20 w-20 text-grape lg:block"
+        />
+
+        {/* ------------------------------------------------------- HEADER */}
+        <Reveal as="header" y={16}>
+          <h1 className="font-display font-bold uppercase text-mega">
+            The slop
+            <br />
+            leaderboard
+          </h1>
+          <StickerLabel tilt="l" className="mt-4">
+            Higher is worse. Obviously.
+          </StickerLabel>
+          <div className="mt-6 flex flex-wrap gap-2 font-sans text-[11px] font-bold uppercase tracking-widest">
+            <span className="rounded-full border border-ink bg-paper px-3 py-1.5 shadow-brut-sm">
+              {entries.length} repos ranked
+            </span>
+            <span className="tabular inline-flex items-center gap-1.5 rounded-full border border-ink bg-paper px-3 py-1.5 shadow-brut-sm">
+              <SkullIcon className="h-3.5 w-3.5" />
+              {totalSkulls.toLocaleString()} skulls given
+            </span>
+            <span className="rounded-full border border-ink bg-sun px-3 py-1.5 shadow-brut-sm">
+              Every entry self-submitted
+            </span>
+          </div>
+        </Reveal>
+
+        {/* ------------------------------------------------------ FILTERS */}
+        <div className="mt-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <FilterTabs active={range} tag={tag} award={activeAward} />
+          {(tag || activeAward) && (
+            <div className="flex flex-wrap items-center gap-2 font-sans text-xs font-bold uppercase tracking-widest text-ash">
+              <span className="text-ash-dim">Filtered:</span>
+              {tag ? (
+                <span className="rounded-full border-2 border-ink px-3 py-1 text-ink">
+                  #{tag}
+                </span>
+              ) : null}
+              {activeAwardLabel ? (
+                <span className="rounded-full border-2 border-grape px-3 py-1 text-grape">
+                  {activeAwardLabel}
+                </span>
+              ) : null}
+              <Link href="/leaderboard" className="text-pop hover:underline">
+                Clear
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Category awards — each links to its filtered, re-ranked view. */}
+        <section aria-label="Category awards" className="mt-5">
+          <div className="flex flex-wrap gap-2">
+            {AWARDS.map((award) => {
+              const selected = activeAward === award.id;
+              return (
+                <Link
+                  key={award.id}
+                  href={selected ? "/leaderboard" : `/leaderboard?award=${award.id}`}
+                  className={`press rounded-full border-2 px-4 py-2 font-sans text-[11px] font-bold uppercase tracking-widest ${
+                    selected
+                      ? "border-ink bg-grape text-paper shadow-brut-sm"
+                      : "border-ink bg-paper text-ink hover:bg-sun-wash"
+                  }`}
+                >
+                  {award.label}
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Tag filter row */}
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {tags.map((t) => {
+            const selected = tag === t;
+            const qs = new URLSearchParams();
+            if (!selected) qs.set("tag", t);
+            if (range !== "all") qs.set("range", range);
+            const href = `/leaderboard${qs.toString() ? `?${qs}` : ""}`;
             return (
               <Link
-                key={award.id}
-                href={selected ? "/leaderboard" : `/leaderboard?award=${award.id}`}
-                className={`press rounded-full border-2 px-4 py-2 text-[11px] font-bold uppercase tracking-widest ${
+                key={t}
+                href={href}
+                className={`press rounded-full border px-3 py-1 font-sans text-xs lowercase tracking-wide ${
                   selected
-                    ? "border-ink bg-sun text-ink"                    : "border-ink text-ash hover:border-pop hover:text-pop"
+                    ? "border-ink bg-sun text-ink"
+                    : "border-ash-dim/60 text-ash hover:border-ink hover:text-ink"
                 }`}
               >
-                {award.label}
+                #{t}
               </Link>
             );
           })}
         </div>
-      </section>
 
-      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <FilterTabs active={range} tag={tag} award={activeAward} />
-        {(tag || activeAward) && (
-          <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-widest text-ash">
-            <span className="text-ash-dim">Filtered:</span>
-            {tag ? (
-              <span className="rounded-full border-2 border-ink px-3 py-1 text-ink">
-                #{tag}
-              </span>
-            ) : null}
-            {activeAwardLabel ? (
-              <span className="rounded-full border-2 border-grape px-3 py-1 text-grape">
-                {activeAwardLabel}
-              </span>
-            ) : null}
-            <Link href="/leaderboard" className="text-pop hover:underline">
-              Clear
+        {/* ------------------------------------------------------- PODIUM */}
+        {podium.length > 0 ? (
+          <RevealGroup
+            y={30}
+            stagger={0.12}
+            className="mt-14 grid gap-8 pl-3 pt-3 md:grid-cols-3 md:gap-6"
+          >
+            {podium.map((entry, i) => (
+              <PodiumCard
+                key={entry.id}
+                entry={entry}
+                place={(i + 1) as 1 | 2 | 3}
+                award={awards.get(entry.id)}
+              />
+            ))}
+          </RevealGroup>
+        ) : (
+          <div className="mt-14 rounded-[24px] border-2 border-dashed border-ink p-12 text-center">
+            <p className="font-display text-3xl font-bold uppercase">
+              Nothing here yet
+            </p>
+            <p className="mx-auto mt-2 max-w-sm font-sans text-sm text-ash">
+              No repos match this filter. The slop is out there — go find it,
+              or clear the filter.
+            </p>
+            <Link
+              href="/submit"
+              className="press mt-6 inline-block rounded-full border-2 border-ink bg-sun px-6 py-3 font-display text-sm font-bold uppercase tracking-widest text-ink shadow-brut"
+            >
+              Submit the first one
             </Link>
           </div>
         )}
-      </div>
 
-      {/* Tag filter row */}
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {tags.map((t) => {
-          const selected = tag === t;
-          const params = new URLSearchParams();
-          if (!selected) params.set("tag", t);
-          if (range !== "all") params.set("range", range);
-          const qs = params.toString();
-          return (
-            <Link
-              key={t}
-              href={`/leaderboard${qs ? `?${qs}` : ""}`}
-              className={`press rounded-full border-2 px-3 py-1 text-xs lowercase tracking-wide ${
-                selected
-                  ? "border-ink bg-sun-wash text-ink"
-                  : "border-hairline text-ash hover:border-ink hover:text-ink"
-              }`}
+        {/* ---------------------------------------------------- FULL TABLE */}
+        {table.length > 0 ? (
+          <>
+            <Reveal className="mt-16 flex items-end justify-between gap-4">
+              <h2 className="font-display text-big font-bold uppercase">
+                The rest of the wreckage
+              </h2>
+              <span className="tabular hidden font-sans text-xs font-bold uppercase tracking-widest text-ash sm:block">
+                Ranks 4–{entries.length}
+              </span>
+            </Reveal>
+            <RevealGroup
+              as="ol"
+              y={20}
+              stagger={0.05}
+              className="mt-6 overflow-hidden rounded-[24px] border-2 border-ink bg-cream shadow-brut"
             >
-              #{t}
-            </Link>
-          );
-        })}
+              {table.map((entry, i) => (
+                <SlopRow
+                  key={entry.id}
+                  entry={entry}
+                  rank={i + 4}
+                  award={awards.get(entry.id)}
+                />
+              ))}
+            </RevealGroup>
+          </>
+        ) : null}
       </div>
-
-      {entries.length > 0 ? (
-        <RevealGroup
-          as="ol"
-          y={20}
-          stagger={0.05}
-          className="mt-8 border-t-2 border-hairline"
-        >
-          {entries.map((entry, i) => (
-            <SlopRow
-              key={entry.id}
-              entry={entry}
-              rank={i + 1}
-              award={awards.get(entry.id)}
-            />
-          ))}
-        </RevealGroup>
-      ) : (
-        <div className="mt-8 rounded-[20px] border-2 border-dashed border-ink p-12 text-center">
-          <p className="font-display text-2xl font-black uppercase text-ash">
-            Nothing here yet
-          </p>
-          <p className="mt-2 text-sm text-ash-dim">
-            No repos match this filter. The slop is out there. Go find it.
-          </p>
-          <Link
-            href="/submit"
-            className="press mt-6 inline-block rounded-full border-2 border-ink bg-sun px-6 py-3 font-display text-sm font-black uppercase tracking-widest text-ink"
-          >
-            Submit the first one
-          </Link>
-        </div>
-      )}
     </div>
   );
 }

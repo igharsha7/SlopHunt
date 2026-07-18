@@ -19,7 +19,7 @@ export function SlopRow({
   award?: string;
 }) {
   return (
-    <li className="group relative border-b border-hairline transition-colors hover:bg-cream">
+    <li className="group relative border-b border-hairline transition-colors hover:bg-sun-wash">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 sm:gap-5 sm:px-6">
         <div className="tabular w-8 shrink-0 text-center font-display text-xl font-black text-ash-dim sm:w-12 sm:text-3xl">
           {rank}
