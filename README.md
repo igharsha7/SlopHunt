@@ -18,19 +18,17 @@
 ## Watch
 
 <p align="center">
-  <a href="./launch-video.mp4" title="Watch the SlopHunt launch film">
-    <img src="./public/readme-assets/slophunt-demo.jpg" alt="SlopHunt — four agents, one verdict" width="860" />
-  </a>
+  <img src="./public/readme-assets/launch-preview.gif" alt="SlopHunt launch film — a repo scoring 16 out of 100, with its five sub-scores" width="860" />
 </p>
 
 <p align="center">
-  <strong>▶ <a href="./launch-video.mp4">Launch film — 55s</a></strong><br />
-  The product in one minute: the problem, the pipeline, the score, the receipts.
+  <a href="https://github.com/igharsha7/SlopHunt/releases/download/v1.0/launch-video.mp4"><strong>▶ Launch film — 55s, with sound</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/igharsha7/SlopHunt/releases/download/v1.0/Video.mp4"><strong>▶ Full walkthrough — 2m 10s</strong></a>
 </p>
 
 <p align="center">
-  <strong>▶ <a href="./Video.mp4">Full demo — 2m 10s</a></strong><br />
-  A longer walkthrough of the running app.
+  <sub>The loop above is silent and muted by design. The films have narration.</sub>
 </p>
 
 ## What is SlopHunt?
