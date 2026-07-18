@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ArrowIcon } from "@/components/icons";
 
 const GITHUB_RE =
   /^(?:https?:\/\/)?(?:www\.)?github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/i;
@@ -51,15 +50,18 @@ export function SubmitBox() {
             }}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? "repo-error" : undefined}
-            className="h-14 w-full rounded-full border-2 border-ink bg-paper px-5 font-sans text-base text-ink placeholder:text-ash-dim focus:border-grape focus:outline-none"
+            className="h-14 w-full rounded-full border border-ink bg-cream px-5 font-sans text-base text-ink shadow-brut-sm placeholder:text-ash-dim focus:border-grape focus:outline-none"
           />
         </div>
+        {/* Their CTA anatomy: black pill, white text, yellow mini-chip inside. */}
         <button
           type="submit"
-          className="press flex h-14 items-center justify-center gap-2 rounded-full border-2 border-ink bg-sun px-7 font-display text-base font-black uppercase tracking-widest text-ink shadow-brut hover:bg-sun-deep"
+          className="press flex h-14 items-center justify-center gap-2.5 rounded-full border border-ink bg-ink pl-7 pr-3 font-display text-base font-bold uppercase tracking-widest text-paper shadow-brut hover:bg-grape"
         >
           Roast it
-          <ArrowIcon className="h-5 w-5" />
+          <span className="rounded-full bg-sun px-2.5 py-1 font-sans text-[11px] font-bold tracking-wider text-ink">
+            in 30 secs
+          </span>
         </button>
       </div>
       {error ? (

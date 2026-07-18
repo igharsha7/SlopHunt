@@ -48,7 +48,7 @@ export async function SiteNav() {
             <>
               <Link
                 href="/submit"
-                className="press hidden rounded-full border-2 border-ink bg-sun px-4 py-2 font-display text-xs font-black uppercase tracking-widest text-ink shadow-brut hover:bg-sun-deep sm:block"
+                className="press hidden rounded-full border border-ink bg-sun px-5 py-2.5 font-display text-xs font-bold uppercase tracking-widest text-ink shadow-brut hover:bg-sun-deep sm:block"
               >
                 Submit repo
               </Link>
@@ -83,7 +83,7 @@ export async function SiteNav() {
               <input type="hidden" name="next" value="/submit" />
               <button
                 type="submit"
-                className="press flex items-center gap-2 rounded-full border-2 border-ink bg-sun px-4 py-2 font-display text-xs font-black uppercase tracking-widest text-ink shadow-brut hover:bg-sun-deep"
+                className="press flex items-center gap-2 rounded-full border border-ink bg-paper px-5 py-2.5 font-display text-xs font-bold uppercase tracking-widest text-ink shadow-brut hover:bg-sun"
               >
                 <GitHubIcon className="h-4 w-4" />
                 Sign in
