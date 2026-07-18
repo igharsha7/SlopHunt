@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { CheckIcon } from "@/components/icons";
+import { submitRepo } from "@/lib/backend";
 
 const GITHUB_RE =
   /^(?:https?:\/\/)?(?:www\.)?github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$|^([\w.-]+)\/([\w.-]+)$/i;
@@ -65,27 +66,17 @@ export function SubmitFlow({
       3500,
     );
 
-    try {
-      const res = await fetch("/api/submit", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ repo }),
-      });
-      const data = (await res.json()) as { slug?: string; error?: string };
+    // Routes to the tunnelled backend when configured, else the local route.
+    const result = await submitRepo(repo, login);
+    if (timerRef.current) clearInterval(timerRef.current);
 
-      if (!res.ok || !data.slug) {
-        setPhase("error");
-        setError(data.error ?? "The pipeline choked. Try again.");
-        return;
-      }
-
-      router.push(`/product/${data.slug}`);
-    } catch {
+    if (!result.ok) {
       setPhase("error");
-      setError("Network hiccup. The roast is willing; the connection was weak.");
-    } finally {
-      if (timerRef.current) clearInterval(timerRef.current);
+      setError(result.error);
+      return;
     }
+
+    router.push(`/product/${result.data.slug}`);
   }
 
   if (phase === "running") {

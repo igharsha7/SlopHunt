@@ -54,3 +54,6 @@ video/roast-video/.producer/
 # generated voiceover (regenerate with npm run video:voice)
 video/roast-video/*.wav
 video/roast-video/*.mp3
+
+# vercel
+.vercel

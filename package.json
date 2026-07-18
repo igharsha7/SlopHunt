@@ -15,7 +15,9 @@
     "video:build": "node video/generate-composition.mjs",
     "video:render": "cd video/roast-video && npx --yes hyperframes@0.7.63 render -o renders/roast.mp4 --strict",
     "video:script": "node scripts/grok-script.mjs",
-    "video:voice": "node scripts/kokoro-tts.mjs"
+    "video:voice": "node scripts/kokoro-tts.mjs",
+    "server": "node server/src/index.mjs",
+    "tunnel": "cloudflared tunnel --url http://localhost:8787"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
